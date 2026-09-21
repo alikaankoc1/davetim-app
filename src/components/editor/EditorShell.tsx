@@ -41,15 +41,6 @@ function EditorInner({
   const isLast = step === 4;
   const selectedTitle = hasTemplate ? getTemplateById(data.theme).title : null;
 
-  const stepView = useMemo(() => {
-    if (step === 1) {
-      return <TemplateStep presetFromGallery={presetFromGallery} />;
-    }
-    if (step === 2) return <BasicsStep />;
-    if (step === 3) return <VenueStep />;
-    return <ExtrasStep />;
-  }, [step, presetFromGallery]);
-
   function goToStep(next: number) {
     if (next > 1 && !hasTemplate) {
       setStep(1);
@@ -63,6 +54,20 @@ function EditorInner({
     if (step === 2 && !canFinish) return;
     setStep((current) => Math.min(4, current + 1));
   }
+
+  const stepView = useMemo(() => {
+    if (step === 1) {
+      return (
+        <TemplateStep
+          presetFromGallery={presetFromGallery}
+          onContinue={goNext}
+        />
+      );
+    }
+    if (step === 2) return <BasicsStep />;
+    if (step === 3) return <VenueStep />;
+    return <ExtrasStep />;
+  }, [step, presetFromGallery, hasTemplate, canFinish]);
 
   function complete() {
     if (!hasTemplate) {

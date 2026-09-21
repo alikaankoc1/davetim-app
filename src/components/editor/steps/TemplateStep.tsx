@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { InvitationCard } from "@/components/editor/InvitationCard";
 import { useInvitation } from "@/components/editor/invitation-store";
 import {
@@ -19,8 +19,10 @@ type CategoryFilter = TemplateCategoryId | "all";
 
 export function TemplateStep({
   presetFromGallery = false,
+  onContinue,
 }: {
   presetFromGallery?: boolean;
+  onContinue?: () => void;
 }) {
   const { data, update } = useInvitation();
   const selected = getTemplateById(data.theme);
@@ -28,7 +30,7 @@ export function TemplateStep({
 
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [style, setStyle] = useState<TemplateStyleId | "all">("all");
-  const selectedRef = useRef<HTMLButtonElement | null>(null);
+  const selectedRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!hasSelection) return;
@@ -181,13 +183,12 @@ export function TemplateStep({
                 ? (template.sampleNames.split("&")[1]?.trim() ?? "")
                 : ""),
             date: data.date || "2026-08-24",
+            rsvpEnabled: false,
           };
           return (
-            <button
+            <div
               key={template.id}
               ref={isSelected ? selectedRef : undefined}
-              type="button"
-              onClick={() => selectTemplate(template.id, template.category)}
               className={cn(
                 "overflow-hidden rounded-3xl border text-left transition",
                 isSelected
@@ -195,30 +196,49 @@ export function TemplateStep({
                   : "border-border/70 hover:-translate-y-0.5 hover:border-primary/30"
               )}
             >
-              <div className="aspect-[3/4]">
-                <InvitationCard data={previewData} compact />
-              </div>
+              <button
+                type="button"
+                onClick={() => selectTemplate(template.id, template.category)}
+                className="block w-full text-left"
+              >
+                <div className="aspect-[3/4]">
+                  <InvitationCard data={previewData} compact />
+                </div>
+              </button>
               <div className="flex items-center justify-between gap-2 px-4 py-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{template.title}</p>
+                <button
+                  type="button"
+                  onClick={() => selectTemplate(template.id, template.category)}
+                  className="min-w-0 flex-1 text-left"
+                >
+                  <p className="truncate text-sm font-semibold">
+                    {template.title}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {
-                      TEMPLATE_CATEGORIES.find((c) => c.id === template.category)
-                        ?.label
+                      TEMPLATE_CATEGORIES.find(
+                        (c) => c.id === template.category
+                      )?.label
                     }{" "}
                     ·{" "}
                     {
-                      TEMPLATE_STYLES.find((s) => s.id === template.style)?.label
+                      TEMPLATE_STYLES.find((s) => s.id === template.style)
+                        ?.label
                     }
                   </p>
-                </div>
+                </button>
                 {isSelected ? (
-                  <span className="shrink-0 text-xs font-medium text-primary">
-                    Seçildi
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onContinue?.()}
+                    aria-label="Kartı tasarla"
+                    className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border/80 bg-secondary text-primary transition hover:border-primary/40 hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <ArrowRight className="size-4" />
+                  </button>
                 ) : null}
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
