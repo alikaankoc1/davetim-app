@@ -71,7 +71,7 @@ function contentFromTemplate(template: InvitationTemplate): CardContent {
     names: template.sampleNames,
     eventLabel: template.eventLabel,
     dateLine: template.sampleDate,
-    rsvpEnabled: true,
+    rsvpEnabled: false,
   };
 }
 
@@ -201,7 +201,7 @@ export function InvitationCardFace({
             )}
             style={{ color: template.mutedColor }}
           >
-            LCV bekleniyor
+            Katılım bekleniyor
           </p>
         ) : null}
       </div>

@@ -91,37 +91,58 @@ export function TemplateGallery() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ duration: 0.28 }}
-                className="group relative overflow-hidden rounded-3xl border border-border/70 bg-card shadow-[0_16px_40px_-28px_rgba(40,20,16,0.4)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_24px_50px_-24px_rgba(40,20,16,0.45)]"
+                className="group relative overflow-hidden rounded-3xl border border-border/70 bg-card shadow-[0_16px_40px_-28px_rgba(40,20,16,0.4)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_50px_-24px_rgba(40,20,16,0.45)]"
               >
                 <div className="relative aspect-[3/4]">
                   <TemplateGalleryCard template={template} />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-foreground/45 p-4 opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 max-md:justify-end max-md:bg-gradient-to-t max-md:from-foreground/75 max-md:via-foreground/20 max-md:to-transparent max-md:opacity-100">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => setPreview(template)}
-                      className="h-9 w-full max-w-[200px] rounded-full bg-card text-foreground"
-                    >
-                      <Eye className="size-3.5" />
-                      Önizle
-                    </Button>
-                    <Button
-                      nativeButton={false}
-                      render={<a href={`/olustur?theme=${template.id}`} />}
-                      className="h-9 w-full max-w-[200px] rounded-full"
-                    >
-                      Bu Şablonu Seç
-                    </Button>
+                  {/* Hover: butonlar kartın üstünde, net okunur */}
+                  <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center opacity-0 transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 max-md:pointer-events-auto max-md:opacity-100">
+                    <div className="flex w-full flex-col items-center gap-2 bg-gradient-to-b from-foreground/70 via-foreground/45 to-transparent px-3 pt-3 pb-10">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setPreview(template)}
+                        className="h-9 w-full max-w-[200px] rounded-full bg-card text-foreground shadow-md"
+                      >
+                        <Eye className="size-3.5" />
+                        Önizle
+                      </Button>
+                      <Button
+                        nativeButton={false}
+                        render={<a href={`/olustur?theme=${template.id}`} />}
+                        className="h-9 w-full max-w-[200px] rounded-full shadow-md"
+                      >
+                        Bu Şablonu Seç
+                      </Button>
+                    </div>
                   </div>
                 </div>
-                <div className="px-4 py-3">
-                  <p className="text-sm font-semibold">{template.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {
-                      TEMPLATE_STYLES.find((item) => item.id === template.style)
-                        ?.label
-                    }
-                  </p>
+                <div className="flex items-center justify-between gap-3 px-4 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">
+                      {template.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {
+                        TEMPLATE_CATEGORIES.find(
+                          (item) => item.id === template.category
+                        )?.label
+                      }{" "}
+                      ·{" "}
+                      {
+                        TEMPLATE_STYLES.find(
+                          (item) => item.id === template.style
+                        )?.label
+                      }
+                    </p>
+                  </div>
+                  <a
+                    href={`/olustur?theme=${template.id}`}
+                    aria-label={`${template.title} ile davetiye oluştur`}
+                    className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border/80 bg-secondary text-primary transition hover:border-primary/40 hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <ArrowRight className="size-4" />
+                  </a>
                 </div>
               </motion.article>
             ))}

@@ -49,9 +49,10 @@ export function ExtrasStep() {
 
         <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card px-4 py-4">
           <div>
-            <p className="text-sm font-medium">LCV / RSVP</p>
+            <p className="text-sm font-medium">LCV / RSVP formu</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Misafirler katılım durumunu bildirsin.
+              Açıkken misafirler “geliyorum / gelemiyorum” diye katılım bildirir.
+              İsim alanı değil; davetli listesi için bir yanıttır.
             </p>
           </div>
           <button
