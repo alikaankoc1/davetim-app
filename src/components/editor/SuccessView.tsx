@@ -55,7 +55,15 @@ export function SuccessView({ slug }: { slug: string }) {
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button
+            nativeButton={false}
+            render={<a href={`/${slug}`} />}
+            className="h-11 rounded-full px-5"
+          >
+            Davetiyeyi aç
+          </Button>
+          <Button
             type="button"
+            variant="outline"
             onClick={copyLink}
             className="h-11 rounded-full px-5"
           >
