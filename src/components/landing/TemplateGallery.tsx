@@ -3,155 +3,40 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Eye, X } from "lucide-react";
+import { TemplateGalleryCard } from "@/components/editor/InvitationCard";
 import { Button } from "@/components/ui/button";
+import {
+  INVITATION_TEMPLATES,
+  TEMPLATE_CATEGORIES,
+  TEMPLATE_STYLES,
+  type InvitationTemplate,
+  type TemplateCategoryId,
+  type TemplateStyleId,
+} from "@/data/templates";
 import { cn } from "@/lib/utils";
 
-const categories = [
-  { id: "dugun", label: "Düğün" },
-  { id: "nisan", label: "Nişan" },
-  { id: "kina", label: "Kına" },
-  { id: "sunnet", label: "Sünnet" },
-  { id: "dogumgunu", label: "Doğum Günü" },
-] as const;
-
-const styles = [
-  { id: "minimal", label: "Minimal" },
-  { id: "luks", label: "Lüks Altın" },
-  { id: "floral", label: "Floral" },
-  { id: "geometrik", label: "Modern Geometrik" },
-] as const;
-
-type CategoryId = (typeof categories)[number]["id"];
-type StyleId = (typeof styles)[number]["id"];
-
-type Template = {
-  id: string;
-  category: CategoryId;
-  style: StyleId;
-  title: string;
-  event: string;
-  date: string;
-};
-
-const templates: Template[] = [
-  { id: "dugun-minimal", category: "dugun", style: "minimal", title: "Ali & Ayşe", event: "Düğün Daveti", date: "24.08.2026" },
-  { id: "dugun-luks", category: "dugun", style: "luks", title: "Elif & Can", event: "Düğün Daveti", date: "12.09.2026" },
-  { id: "dugun-floral", category: "dugun", style: "floral", title: "Zeynep & Emre", event: "Düğün Daveti", date: "03.10.2026" },
-  { id: "dugun-geometrik", category: "dugun", style: "geometrik", title: "Deniz & Ece", event: "Düğün Daveti", date: "18.07.2026" },
-  { id: "nisan-minimal", category: "nisan", style: "minimal", title: "Mert & Selin", event: "Nişan Töreni", date: "05.06.2026" },
-  { id: "nisan-luks", category: "nisan", style: "luks", title: "Kaan & İrem", event: "Nişan Töreni", date: "21.06.2026" },
-  { id: "nisan-floral", category: "nisan", style: "floral", title: "Burak & Duru", event: "Nişan Töreni", date: "14.05.2026" },
-  { id: "nisan-geometrik", category: "nisan", style: "geometrik", title: "Onur & Lara", event: "Nişan Töreni", date: "28.08.2026" },
-  { id: "kina-minimal", category: "kina", style: "minimal", title: "Melisa", event: "Kına Gecesi", date: "23.08.2026" },
-  { id: "kina-luks", category: "kina", style: "luks", title: "Defne", event: "Kına Gecesi", date: "11.09.2026" },
-  { id: "kina-floral", category: "kina", style: "floral", title: "Yasemin", event: "Kına Gecesi", date: "02.10.2026" },
-  { id: "kina-geometrik", category: "kina", style: "geometrik", title: "Ceren", event: "Kına Gecesi", date: "16.07.2026" },
-  { id: "sunnet-minimal", category: "sunnet", style: "minimal", title: "Mehmet", event: "Sünnet Düğünü", date: "09.08.2026" },
-  { id: "sunnet-luks", category: "sunnet", style: "luks", title: "Yusuf", event: "Sünnet Düğünü", date: "20.09.2026" },
-  { id: "sunnet-floral", category: "sunnet", style: "floral", title: "Ömer", event: "Sünnet Düğünü", date: "04.07.2026" },
-  { id: "sunnet-geometrik", category: "sunnet", style: "geometrik", title: "Efe", event: "Sünnet Düğünü", date: "15.08.2026" },
-  { id: "dogumgunu-minimal", category: "dogumgunu", style: "minimal", title: "Ada", event: "Doğum Günü", date: "01.05.2026" },
-  { id: "dogumgunu-luks", category: "dogumgunu", style: "luks", title: "Asya", event: "Doğum Günü", date: "19.06.2026" },
-  { id: "dogumgunu-floral", category: "dogumgunu", style: "floral", title: "Lina", event: "Doğum Günü", date: "08.04.2026" },
-  { id: "dogumgunu-geometrik", category: "dogumgunu", style: "geometrik", title: "Kerem", event: "Doğum Günü", date: "27.03.2026" },
-];
-
-function TemplateFace({
-  template,
-  compact = false,
-}: {
-  template: Template;
-  compact?: boolean;
-}) {
-  const titleSize = compact ? "text-2xl" : "text-3xl";
-
-  if (template.style === "luks") {
-    return (
-      <div className="relative flex h-full flex-col items-center justify-center overflow-hidden bg-[linear-gradient(180deg,#2a1416_0%,#3d1c20_55%,#241114_100%)] px-5 text-center">
-        <div className="absolute inset-4 rounded-[1.1rem] border border-gold/40" />
-        <p className="font-cormorant text-[10px] tracking-[0.38em] text-gold uppercase">
-          {template.event}
-        </p>
-        <div className="my-4 h-px w-14 bg-gold/70" />
-        <p className={`font-cormorant ${titleSize} leading-tight text-[#f6eee3]`}>
-          {template.title}
-        </p>
-        <p className="mt-4 font-cormorant text-sm tracking-[0.2em] text-gold">
-          {template.date}
-        </p>
-      </div>
-    );
-  }
-
-  if (template.style === "floral") {
-    return (
-      <div className="relative flex h-full flex-col items-center justify-center overflow-hidden bg-[linear-gradient(180deg,#fbf3ea_0%,#f3ddd2_100%)] px-5 text-center">
-        <div className="absolute -top-8 -left-8 size-28 rounded-full bg-primary/15 blur-2xl" />
-        <div className="absolute -right-6 -bottom-10 size-32 rounded-full bg-gold/25 blur-2xl" />
-        <div className="absolute inset-5 rounded-[1.2rem] border border-primary/15" />
-        <p className="font-cormorant text-[10px] tracking-[0.32em] text-primary/80 uppercase">
-          {template.event}
-        </p>
-        <p className={`font-cormorant mt-4 ${titleSize} leading-tight text-foreground`}>
-          {template.title}
-        </p>
-        <div className="mt-3 h-px w-10 bg-primary/30" />
-        <p className="mt-3 font-cormorant text-sm tracking-[0.18em] text-primary">
-          {template.date}
-        </p>
-      </div>
-    );
-  }
-
-  if (template.style === "geometrik") {
-    return (
-      <div className="relative flex h-full flex-col items-center justify-center overflow-hidden bg-[#f7f1e8] px-5 text-center">
-        <div className="absolute top-6 left-6 size-16 rotate-12 border border-primary/25" />
-        <div className="absolute right-7 bottom-8 size-20 -rotate-6 border border-gold/50" />
-        <div className="absolute top-1/3 right-5 size-8 rotate-45 bg-primary/10" />
-        <p className="text-[10px] font-medium tracking-[0.28em] text-muted-foreground uppercase">
-          {template.event}
-        </p>
-        <p className={`font-heading mt-4 ${titleSize} leading-tight text-foreground`}>
-          {template.title}
-        </p>
-        <p className="mt-4 text-xs font-medium tracking-[0.2em] text-primary">
-          {template.date}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative flex h-full flex-col items-center justify-center bg-[#fbfaf7] px-5 text-center">
-      <div className="absolute inset-6 border border-foreground/10" />
-      <p className="font-cormorant text-[10px] tracking-[0.4em] text-muted-foreground uppercase">
-        {template.event}
-      </p>
-      <p className={`font-cormorant mt-5 ${titleSize} leading-tight text-foreground`}>
-        {template.title}
-      </p>
-      <div className="my-4 h-px w-12 bg-foreground/15" />
-      <p className="font-cormorant text-sm tracking-[0.18em] text-foreground/70">
-        {template.date}
-      </p>
-    </div>
-  );
-}
-
 export function TemplateGallery() {
-  const [category, setCategory] = useState<CategoryId>("dugun");
-  const [style, setStyle] = useState<StyleId | "all">("all");
-  const [preview, setPreview] = useState<Template | null>(null);
+  const [category, setCategory] = useState<TemplateCategoryId>("dugun");
+  const [style, setStyle] = useState<TemplateStyleId | "all">("all");
+  const [preview, setPreview] = useState<InvitationTemplate | null>(null);
 
   const visible = useMemo(
     () =>
-      templates.filter(
+      INVITATION_TEMPLATES.filter(
         (item) =>
           item.category === category && (style === "all" || item.style === style)
       ),
     [category, style]
   );
+
+  const styleFilters = useMemo(() => {
+    const present = new Set(
+      INVITATION_TEMPLATES.filter((item) => item.category === category).map(
+        (item) => item.style
+      )
+    );
+    return TEMPLATE_STYLES.filter((item) => present.has(item.id));
+  }, [category]);
 
   return (
     <section
@@ -159,7 +44,7 @@ export function TemplateGallery() {
       className="relative scroll-mt-28 overflow-hidden py-20 sm:py-24"
     >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute right-10 top-10 h-64 w-64 rounded-full bg-gold/15 blur-3xl" />
+        <div className="absolute top-10 right-10 h-64 w-64 rounded-full bg-gold/15 blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -168,21 +53,25 @@ export function TemplateGallery() {
             Tasarım galerisi
           </span>
           <h2 className="font-heading mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Her kutlamaya yakışan bir{" "}
-            <span className="italic text-primary">şablon</span>
+            Canva kalitesinde{" "}
+            <span className="italic text-primary">şablonlar</span>
           </h2>
           <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Kategori ve tarza göre süzün, üzerine gelin, önizleyin ve seçin.
+            Katmanlı çerçeveler, dokular ve özel fontlarla her kutlamaya özel
+            bir yüz.
           </p>
         </div>
 
         <div className="mt-10 flex flex-col items-center gap-4">
           <div className="flex w-full max-w-3xl flex-wrap justify-center gap-2 rounded-full border border-border/70 bg-card/80 p-1.5">
-            {categories.map((item) => (
+            {TEMPLATE_CATEGORIES.map((item) => (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setCategory(item.id)}
+                onClick={() => {
+                  setCategory(item.id);
+                  setStyle("all");
+                }}
                 className={cn(
                   "rounded-full px-4 py-2 text-sm font-medium transition-colors",
                   category === item.id
@@ -208,7 +97,7 @@ export function TemplateGallery() {
             >
               Tüm Tarzlar
             </button>
-            {styles.map((item) => (
+            {styleFilters.map((item) => (
               <button
                 key={item.id}
                 type="button"
@@ -228,7 +117,7 @@ export function TemplateGallery() {
 
         <motion.div
           layout
-          className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         >
           <AnimatePresence mode="popLayout">
             {visible.map((template) => (
@@ -242,7 +131,7 @@ export function TemplateGallery() {
                 className="group relative overflow-hidden rounded-3xl border border-border/70 bg-card shadow-[0_16px_40px_-28px_rgba(40,20,16,0.4)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_24px_50px_-24px_rgba(40,20,16,0.45)]"
               >
                 <div className="relative aspect-[3/4]">
-                  <TemplateFace template={template} />
+                  <TemplateGalleryCard template={template} />
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-foreground/45 p-4 opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 max-md:justify-end max-md:bg-gradient-to-t max-md:from-foreground/75 max-md:via-foreground/20 max-md:to-transparent max-md:opacity-100">
                     <Button
                       type="button"
@@ -255,7 +144,9 @@ export function TemplateGallery() {
                     </Button>
                     <Button
                       nativeButton={false}
-                      render={<a href={`/olustur?theme=${template.style}`} />}
+                      render={
+                        <a href={`/olustur?theme=${template.id}`} />
+                      }
                       className="h-9 w-full max-w-[200px] rounded-full"
                     >
                       Bu Şablonu Seç
@@ -265,13 +156,20 @@ export function TemplateGallery() {
                 <div className="px-4 py-3">
                   <p className="text-sm font-semibold">{template.title}</p>
                   <p className="text-xs text-muted-foreground">
-                    {styles.find((item) => item.id === template.style)?.label}
+                    {TEMPLATE_STYLES.find((item) => item.id === template.style)
+                      ?.label}
                   </p>
                 </div>
               </motion.article>
             ))}
           </AnimatePresence>
         </motion.div>
+
+        {visible.length === 0 ? (
+          <p className="mt-10 text-center text-sm text-muted-foreground">
+            Bu filtrede şablon yok. Başka bir tarz deneyin.
+          </p>
+        ) : null}
       </div>
 
       <AnimatePresence>
@@ -299,18 +197,23 @@ export function TemplateGallery() {
                 <X className="size-4" />
               </button>
               <div className="aspect-[3/4]">
-                <TemplateFace template={preview} />
+                <TemplateGalleryCard template={preview} />
               </div>
               <div className="flex flex-col gap-3 p-5">
                 <div>
                   <p className="font-heading text-xl">{preview.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    {preview.event} · {preview.date}
+                    {preview.eventLabel} · {preview.sampleDate}
                   </p>
                 </div>
                 <Button
                   nativeButton={false}
-                  render={<a href={`/olustur?theme=${preview.style}`} onClick={() => setPreview(null)} />}
+                  render={
+                    <a
+                      href={`/olustur?theme=${preview.id}`}
+                      onClick={() => setPreview(null)}
+                    />
+                  }
                   className="h-11 rounded-full"
                 >
                   Bu Şablonu Seç

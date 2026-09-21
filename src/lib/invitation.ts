@@ -1,3 +1,9 @@
+import {
+  INVITATION_TEMPLATES,
+  LEGACY_THEME_MAP,
+  getTemplateById,
+} from "@/data/templates";
+
 export const EVENT_TYPES = [
   { id: "dugun", label: "Düğün", cardLabel: "Düğün Daveti" },
   { id: "nisan", label: "Nişan", cardLabel: "Nişan Töreni" },
@@ -6,12 +12,13 @@ export const EVENT_TYPES = [
   { id: "dogumgunu", label: "Doğum Günü", cardLabel: "Doğum Günü" },
 ] as const;
 
-export const THEMES = [
-  { id: "minimal", label: "Minimal" },
-  { id: "luks", label: "Lüks Altın" },
-  { id: "floral", label: "Floral" },
-  { id: "geometrik", label: "Modern" },
-] as const;
+/** Theme id = template id (legacy ids still accepted via LEGACY_THEME_MAP) */
+export const THEMES = INVITATION_TEMPLATES.map((template) => ({
+  id: template.id,
+  label: template.title,
+  category: template.category,
+  style: template.style,
+}));
 
 export const MUSIC_OPTIONS = [
   { id: "none", label: "Sessiz" },
@@ -22,7 +29,7 @@ export const MUSIC_OPTIONS = [
 ] as const;
 
 export type EventTypeId = (typeof EVENT_TYPES)[number]["id"];
-export type ThemeId = (typeof THEMES)[number]["id"];
+export type ThemeId = string;
 export type MusicId = (typeof MUSIC_OPTIONS)[number]["id"];
 
 export type InvitationData = {
@@ -42,7 +49,7 @@ export type InvitationData = {
 };
 
 export const defaultInvitation: InvitationData = {
-  theme: "minimal",
+  theme: "gece-luksu",
   eventType: "dugun",
   hostA: "",
   hostB: "",
@@ -56,6 +63,8 @@ export const defaultInvitation: InvitationData = {
   rsvpEnabled: true,
   message: "",
 };
+
+export { getTemplateById, LEGACY_THEME_MAP };
 
 export const INVITATION_STORAGE_KEY = "davetim-invitation";
 
@@ -127,4 +136,9 @@ export function nameLabels(eventType: EventTypeId) {
   if (eventType === "kina") return { a: "Gelin adı", b: "" };
   if (eventType === "sunnet") return { a: "Çocuğun adı", b: "" };
   return { a: "Kutlayan", b: "" };
+}
+
+export function normalizeThemeId(value: string | undefined) {
+  if (!value) return defaultInvitation.theme;
+  return LEGACY_THEME_MAP[value] ?? value;
 }

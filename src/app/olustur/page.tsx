@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { EditorShell } from "@/components/editor/EditorShell";
-import { THEMES, type ThemeId } from "@/lib/invitation";
+import { getTemplateById, isTemplateId } from "@/data/templates";
+import { normalizeThemeId } from "@/lib/invitation";
 
 export const metadata: Metadata = {
   title: "Davetiye Oluştur | Davetim",
@@ -8,17 +9,20 @@ export const metadata: Metadata = {
     "Şablonunu seç, bilgilerini gir ve davetiyeni anında önizle.",
 };
 
-function isTheme(value: string | undefined): value is ThemeId {
-  return THEMES.some((theme) => theme.id === value);
-}
-
 export default async function CreatePage({
   searchParams,
 }: {
   searchParams: Promise<{ theme?: string }>;
 }) {
   const params = await searchParams;
-  const initialTheme = isTheme(params.theme) ? params.theme : undefined;
+  const raw = params.theme;
+  const theme = isTemplateId(raw) ? normalizeThemeId(raw) : undefined;
+  const template = theme ? getTemplateById(theme) : undefined;
 
-  return <EditorShell initialTheme={initialTheme} />;
+  return (
+    <EditorShell
+      initialTheme={theme}
+      initialEventType={template?.category}
+    />
+  );
 }

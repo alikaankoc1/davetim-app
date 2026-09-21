@@ -16,7 +16,8 @@ import {
   InvitationProvider,
   useInvitation,
 } from "@/components/editor/invitation-store";
-import { INVITATION_STORAGE_KEY, type ThemeId } from "@/lib/invitation";
+import { INVITATION_STORAGE_KEY, type EventTypeId, type ThemeId } from "@/lib/invitation";
+
 
 function EditorInner() {
   const router = useRouter();
@@ -151,10 +152,19 @@ function EditorInner() {
   );
 }
 
-export function EditorShell({ initialTheme }: { initialTheme?: ThemeId }) {
+export function EditorShell({
+  initialTheme,
+  initialEventType,
+}: {
+  initialTheme?: ThemeId;
+  initialEventType?: EventTypeId;
+}) {
   return (
     <InvitationProvider
-      initial={initialTheme ? { theme: initialTheme } : undefined}
+      initial={{
+        ...(initialTheme ? { theme: initialTheme } : {}),
+        ...(initialEventType ? { eventType: initialEventType } : {}),
+      }}
     >
       <EditorInner />
     </InvitationProvider>
