@@ -22,6 +22,7 @@ import {
   type EventTypeId,
   type ThemeId,
 } from "@/lib/invitation";
+import { cn } from "@/lib/utils";
 
 function EditorInner({
   startStep,
@@ -77,10 +78,17 @@ function EditorInner({
     router.push(`/basarili?slug=${encodeURIComponent(slug)}`);
   }
 
+  const showPhone = step > 1 && hasTemplate;
+
   return (
     <div className="relative min-h-svh overflow-x-clip bg-background">
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div
+          className={cn(
+            "mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8",
+            step === 1 ? "max-w-7xl" : "max-w-6xl"
+          )}
+        >
           <a href="/" className="flex items-center gap-2.5">
             <span className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Sparkles className="size-3.5" />
@@ -98,7 +106,14 @@ function EditorInner({
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 pt-24 pb-28 sm:px-6 md:grid-cols-[minmax(0,1fr)_280px] md:gap-10 md:px-8 md:pb-16 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-14">
+      <div
+        className={cn(
+          "mx-auto gap-10 px-4 pt-24 sm:px-6 md:px-8",
+          step === 1
+            ? "max-w-7xl pb-16"
+            : "grid max-w-6xl pb-28 md:grid-cols-[minmax(0,1fr)_280px] md:gap-10 md:pb-16 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-14"
+        )}
+      >
         <div className="min-w-0">
           <div className="sticky top-16 z-30 -mx-1 bg-background/85 px-1 py-2 backdrop-blur-md">
             <StepIndicator current={step} onSelect={goToStep} />
@@ -163,29 +178,34 @@ function EditorInner({
           </div>
         </div>
 
-        <aside className="hidden md:block">
-          <div className="sticky top-24">
-            <p className="mb-4 text-center text-sm font-medium text-muted-foreground">
-              Canlı önizleme
-            </p>
-            <PhonePreview />
+        {showPhone ? (
+          <aside className="hidden md:block">
+            <div className="sticky top-24">
+              <p className="mb-4 text-center text-sm font-medium text-muted-foreground">
+                Canlı önizleme
+              </p>
+              <PhonePreview />
+            </div>
+          </aside>
+        ) : null}
+      </div>
+
+      {showPhone ? (
+        <>
+          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/90 p-3 backdrop-blur-xl md:hidden">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setPreviewOpen(true)}
+              className="h-11 w-full rounded-full"
+            >
+              <Eye className="size-4" />
+              Davetiyemi Önizle
+            </Button>
           </div>
-        </aside>
-      </div>
-
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/90 p-3 backdrop-blur-xl md:hidden">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setPreviewOpen(true)}
-          className="h-11 w-full rounded-full"
-        >
-          <Eye className="size-4" />
-          Davetiyemi Önizle
-        </Button>
-      </div>
-
-      <PreviewDrawer open={previewOpen} onClose={() => setPreviewOpen(false)} />
+          <PreviewDrawer open={previewOpen} onClose={() => setPreviewOpen(false)} />
+        </>
+      ) : null}
     </div>
   );
 }

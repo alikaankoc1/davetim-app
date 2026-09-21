@@ -164,7 +164,7 @@ export function TemplateStep({
         {hasSelection ? ` · Seçili: ${selected.title}` : ""}
       </p>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
         {templates.map((template) => {
           const isSelected = data.theme === template.id;
           const previewData: InvitationData = {
