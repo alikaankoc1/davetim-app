@@ -54,7 +54,7 @@ export function Pricing() {
   return (
     <section
       id="paketler"
-      className="relative scroll-mt-24 overflow-hidden py-20 sm:py-24"
+      className="relative scroll-mt-28 overflow-hidden py-20 sm:py-24"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-10 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
@@ -74,7 +74,7 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-3">
+        <div className="mt-14 grid items-stretch gap-6 md:grid-cols-3">
           {plans.map((plan, index) => (
             <motion.article
               key={plan.id}
@@ -129,7 +129,7 @@ export function Pricing() {
               <Button
                 nativeButton={false}
                 variant={plan.featured ? "default" : "outline"}
-                render={<a href="#olustur" />}
+                render={<a href="/olustur" />}
                 className={cn(
                   "mt-8 h-11 rounded-full",
                   plan.featured &&

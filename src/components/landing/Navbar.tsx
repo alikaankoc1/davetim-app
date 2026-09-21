@@ -44,7 +44,7 @@ export function Navbar() {
           <div className="hidden md:block">
             <Button
               nativeButton={false}
-              render={<a href="#olustur" />}
+              render={<a href="/olustur" />}
               className="h-10 rounded-full px-5 text-sm"
             >
               Davetiye Oluştur
@@ -88,7 +88,7 @@ export function Navbar() {
               ))}
               <Button
                 nativeButton={false}
-                render={<a href="#olustur" onClick={() => setOpen(false)} />}
+                render={<a href="/olustur" onClick={() => setOpen(false)} />}
                 className="mt-3 h-11 rounded-full"
               >
                 Davetiye Oluştur

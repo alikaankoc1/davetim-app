@@ -1,4 +1,4 @@
-import { Instagram, Mail, Sparkles } from "lucide-react";
+import { Mail, Sparkles } from "lucide-react";
 
 const footerLinks = [
   { href: "#tasarimlar", label: "Tasarımlar" },
@@ -6,6 +6,25 @@ const footerLinks = [
   { href: "#paketler", label: "Paketler" },
   { href: "#sss", label: "SSS" },
 ];
+
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
 
 function XIcon({ className }: { className?: string }) {
   return (
@@ -69,7 +88,7 @@ export function Footer() {
                 aria-label="Instagram"
                 className="flex size-10 items-center justify-center rounded-full border border-border/80 bg-card text-foreground transition-colors hover:border-primary/40 hover:text-primary"
               >
-                <Instagram className="size-4" />
+                <InstagramIcon className="size-4" />
               </a>
               <a
                 href="https://x.com"

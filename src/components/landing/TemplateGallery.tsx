@@ -156,7 +156,7 @@ export function TemplateGallery() {
   return (
     <section
       id="tasarimlar"
-      className="relative scroll-mt-24 overflow-hidden py-20 sm:py-24"
+      className="relative scroll-mt-28 overflow-hidden py-20 sm:py-24"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute right-10 top-10 h-64 w-64 rounded-full bg-gold/15 blur-3xl" />
@@ -255,7 +255,7 @@ export function TemplateGallery() {
                     </Button>
                     <Button
                       nativeButton={false}
-                      render={<a href="#olustur" />}
+                      render={<a href={`/olustur?theme=${template.style}`} />}
                       className="h-9 w-full max-w-[200px] rounded-full"
                     >
                       Bu Şablonu Seç
@@ -310,7 +310,7 @@ export function TemplateGallery() {
                 </div>
                 <Button
                   nativeButton={false}
-                  render={<a href="#olustur" onClick={() => setPreview(null)} />}
+                  render={<a href={`/olustur?theme=${preview.style}`} onClick={() => setPreview(null)} />}
                   className="h-11 rounded-full"
                 >
                   Bu Şablonu Seç

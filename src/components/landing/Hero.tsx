@@ -167,7 +167,7 @@ export function Hero() {
           >
             <Button
               nativeButton={false}
-              render={<a href="#olustur" />}
+              render={<a href="/olustur" />}
               onClick={launchConfetti}
               className="relative h-12 w-full rounded-full px-7 text-base shadow-[0_12px_40px_-6px_oklch(0.42_0.11_22_/_0.7)] ring-1 ring-white/20 transition-shadow hover:shadow-[0_16px_50px_-4px_oklch(0.42_0.11_22_/_0.85)] sm:w-auto"
             >

@@ -53,7 +53,7 @@ export function Features() {
   return (
     <section
       id="ozellikler"
-      className="relative scroll-mt-24 overflow-hidden py-20 sm:py-24"
+      className="relative scroll-mt-28 overflow-hidden py-20 sm:py-24"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-24 -left-16 h-64 w-64 rounded-full bg-blush/70 blur-3xl" />

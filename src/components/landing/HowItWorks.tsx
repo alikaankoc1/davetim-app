@@ -31,7 +31,7 @@ export function HowItWorks() {
   return (
     <section
       id="nasil"
-      className="relative scroll-mt-24 overflow-hidden py-20 sm:py-24"
+      className="relative scroll-mt-28 overflow-hidden py-20 sm:py-24"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-10 left-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-gold/15 blur-3xl" />
