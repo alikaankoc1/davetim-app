@@ -3,6 +3,7 @@ import {
   eventCardLabel,
   formatDisplayDate,
   formatDisplayTime,
+  MUSIC_OPTIONS,
   type InvitationData,
 } from "@/lib/invitation";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,32 @@ function Meta({
       {date}
       {time ? ` · ${time}` : ""}
     </p>
+  );
+}
+
+function CardNotes({
+  data,
+  giftClassName,
+  musicClassName,
+  rsvpClassName,
+}: {
+  data: InvitationData;
+  giftClassName: string;
+  musicClassName: string;
+  rsvpClassName: string;
+}) {
+  const gift = data.giftNote.trim();
+  const music =
+    data.music !== "none"
+      ? MUSIC_OPTIONS.find((option) => option.id === data.music)?.label
+      : null;
+
+  return (
+    <>
+      {gift ? <p className={giftClassName}>{gift}</p> : null}
+      {music ? <p className={musicClassName}>♪ {music}</p> : null}
+      {data.rsvpEnabled ? <p className={rsvpClassName}>LCV bekleniyor</p> : null}
+    </>
   );
 }
 
@@ -69,11 +96,12 @@ export function InvitationCard({
             {message}
           </p>
         ) : null}
-        {data.rsvpEnabled ? (
-          <p className="relative mt-5 font-cormorant text-[10px] tracking-[0.28em] text-gold/80 uppercase">
-            LCV bekleniyor
-          </p>
-        ) : null}
+        <CardNotes
+          data={data}
+          giftClassName="relative mt-4 max-w-[22ch] font-cormorant text-[11px] leading-relaxed text-[#f6eee3]/55"
+          musicClassName="relative mt-3 font-cormorant text-[10px] tracking-[0.12em] text-gold/75"
+          rsvpClassName="relative mt-5 font-cormorant text-[10px] tracking-[0.28em] text-gold/80 uppercase"
+        />
       </div>
     );
   }
@@ -109,11 +137,12 @@ export function InvitationCard({
             {message}
           </p>
         ) : null}
-        {data.rsvpEnabled ? (
-          <p className="relative mt-4 font-cormorant text-[10px] tracking-[0.24em] text-primary/70 uppercase">
-            LCV bekleniyor
-          </p>
-        ) : null}
+        <CardNotes
+          data={data}
+          giftClassName="relative mt-4 max-w-[22ch] font-cormorant text-[11px] leading-relaxed text-foreground/50"
+          musicClassName="relative mt-3 font-cormorant text-[10px] tracking-[0.12em] text-primary/70"
+          rsvpClassName="relative mt-4 font-cormorant text-[10px] tracking-[0.24em] text-primary/70 uppercase"
+        />
       </div>
     );
   }
@@ -146,11 +175,12 @@ export function InvitationCard({
             {message}
           </p>
         ) : null}
-        {data.rsvpEnabled ? (
-          <p className="relative mt-4 text-[10px] font-medium tracking-[0.24em] text-primary/70 uppercase">
-            LCV bekleniyor
-          </p>
-        ) : null}
+        <CardNotes
+          data={data}
+          giftClassName="relative mt-4 max-w-[22ch] text-[11px] leading-relaxed text-muted-foreground"
+          musicClassName="relative mt-3 text-[10px] tracking-[0.12em] text-primary/70"
+          rsvpClassName="relative mt-4 text-[10px] font-medium tracking-[0.24em] text-primary/70 uppercase"
+        />
       </div>
     );
   }
@@ -183,11 +213,12 @@ export function InvitationCard({
           {message}
         </p>
       ) : null}
-      {data.rsvpEnabled ? (
-        <p className="relative mt-4 font-cormorant text-[10px] tracking-[0.24em] text-foreground/45 uppercase">
-          LCV bekleniyor
-        </p>
-      ) : null}
+      <CardNotes
+        data={data}
+        giftClassName="relative mt-4 max-w-[22ch] font-cormorant text-[11px] leading-relaxed text-foreground/45"
+        musicClassName="relative mt-3 font-cormorant text-[10px] tracking-[0.12em] text-foreground/50"
+        rsvpClassName="relative mt-4 font-cormorant text-[10px] tracking-[0.24em] text-foreground/45 uppercase"
+      />
     </div>
   );
 }

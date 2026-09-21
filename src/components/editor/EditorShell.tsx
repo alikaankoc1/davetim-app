@@ -68,8 +68,10 @@ function EditorInner() {
       </header>
 
       <div className="mx-auto grid max-w-6xl gap-10 px-4 pt-24 pb-28 sm:px-6 md:grid-cols-[minmax(0,1fr)_280px] md:gap-10 md:px-8 md:pb-16 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-14">
-          <div className="min-w-0">
-          <StepIndicator current={step} onSelect={setStep} />
+        <div className="min-w-0">
+          <div className="sticky top-16 z-30 -mx-1 bg-background/85 px-1 py-2 backdrop-blur-md">
+            <StepIndicator current={step} onSelect={setStep} />
+          </div>
           <div className="mt-8 min-h-[420px]">
             <AnimatePresence mode="wait">
               <motion.div
