@@ -63,6 +63,13 @@ alter table public.invitations enable row level security;
 alter table public.rsvps enable row level security;
 alter table public.orders enable row level security;
 
+-- Policy'ler tekrar çalıştırılabilir olsun
+drop policy if exists "Public can read published invitations" on public.invitations;
+drop policy if exists "Users manage own invitations" on public.invitations;
+drop policy if exists "Anyone can insert rsvp for published" on public.rsvps;
+drop policy if exists "Owners can read rsvps" on public.rsvps;
+drop policy if exists "Users manage own orders" on public.orders;
+
 -- Yayındaki davetiyeler herkese okunabilir (misafir sayfası)
 create policy "Public can read published invitations"
   on public.invitations for select
