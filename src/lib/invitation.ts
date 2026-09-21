@@ -49,7 +49,7 @@ export type InvitationData = {
 };
 
 export const defaultInvitation: InvitationData = {
-  theme: "gece-luksu",
+  theme: "",
   eventType: "dugun",
   hostA: "",
   hostB: "",

@@ -16,31 +16,58 @@ import {
   InvitationProvider,
   useInvitation,
 } from "@/components/editor/invitation-store";
-import { INVITATION_STORAGE_KEY, type EventTypeId, type ThemeId } from "@/lib/invitation";
+import { getTemplateById, isTemplateId } from "@/data/templates";
+import {
+  INVITATION_STORAGE_KEY,
+  type EventTypeId,
+  type ThemeId,
+} from "@/lib/invitation";
 
-
-function EditorInner() {
+function EditorInner({
+  startStep,
+  presetFromGallery,
+}: {
+  startStep: number;
+  presetFromGallery: boolean;
+}) {
   const router = useRouter();
   const { data, slug } = useInvitation();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(startStep);
   const [previewOpen, setPreviewOpen] = useState(false);
 
+  const hasTemplate = isTemplateId(data.theme);
   const canFinish = data.hostA.trim().length > 0;
   const isLast = step === 4;
+  const selectedTitle = hasTemplate ? getTemplateById(data.theme).title : null;
 
   const stepView = useMemo(() => {
-    if (step === 1) return <TemplateStep />;
+    if (step === 1) {
+      return <TemplateStep presetFromGallery={presetFromGallery} />;
+    }
     if (step === 2) return <BasicsStep />;
     if (step === 3) return <VenueStep />;
     return <ExtrasStep />;
-  }, [step]);
+  }, [step, presetFromGallery]);
+
+  function goToStep(next: number) {
+    if (next > 1 && !hasTemplate) {
+      setStep(1);
+      return;
+    }
+    setStep(next);
+  }
 
   function goNext() {
+    if (step === 1 && !hasTemplate) return;
     if (step === 2 && !canFinish) return;
     setStep((current) => Math.min(4, current + 1));
   }
 
   function complete() {
+    if (!hasTemplate) {
+      setStep(1);
+      return;
+    }
     if (!canFinish) {
       setStep(2);
       return;
@@ -62,16 +89,19 @@ function EditorInner() {
               Davetim
             </span>
           </a>
-          <p className="hidden text-sm text-muted-foreground sm:block">
-            Adım {step} / 4
-          </p>
+          <div className="hidden text-right sm:block">
+            <p className="text-sm text-muted-foreground">Adım {step} / 4</p>
+            {selectedTitle ? (
+              <p className="text-xs font-medium text-primary">{selectedTitle}</p>
+            ) : null}
+          </div>
         </div>
       </header>
 
       <div className="mx-auto grid max-w-6xl gap-10 px-4 pt-24 pb-28 sm:px-6 md:grid-cols-[minmax(0,1fr)_280px] md:gap-10 md:px-8 md:pb-16 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-14">
         <div className="min-w-0">
           <div className="sticky top-16 z-30 -mx-1 bg-background/85 px-1 py-2 backdrop-blur-md">
-            <StepIndicator current={step} onSelect={setStep} />
+            <StepIndicator current={step} onSelect={goToStep} />
           </div>
           <div className="mt-8 min-h-[420px]">
             <AnimatePresence mode="wait">
@@ -87,8 +117,15 @@ function EditorInner() {
             </AnimatePresence>
           </div>
 
+          {step === 1 && !hasTemplate ? (
+            <p className="mt-6 text-sm text-primary">
+              Bir şablon seçmeden ilerleyemezsin.
+            </p>
+          ) : null}
           {step === 2 && !canFinish ? (
-            <p className="mt-6 text-sm text-primary">Devam etmek için bir isim girin.</p>
+            <p className="mt-6 text-sm text-primary">
+              Devam etmek için bir isim girin.
+            </p>
           ) : null}
 
           <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
@@ -116,9 +153,10 @@ function EditorInner() {
               <Button
                 type="button"
                 onClick={goNext}
+                disabled={step === 1 && !hasTemplate}
                 className="h-11 w-full rounded-full px-6 sm:w-auto"
               >
-                Kaydet ve İlerle
+                {step === 1 ? "Şablonla devam et" : "Kaydet ve İlerle"}
                 <ArrowRight className="size-4" />
               </Button>
             )}
@@ -159,6 +197,8 @@ export function EditorShell({
   initialTheme?: ThemeId;
   initialEventType?: EventTypeId;
 }) {
+  const presetFromGallery = Boolean(initialTheme);
+
   return (
     <InvitationProvider
       initial={{
@@ -166,7 +206,10 @@ export function EditorShell({
         ...(initialEventType ? { eventType: initialEventType } : {}),
       }}
     >
-      <EditorInner />
+      <EditorInner
+        startStep={presetFromGallery ? 2 : 1}
+        presetFromGallery={presetFromGallery}
+      />
     </InvitationProvider>
   );
 }
