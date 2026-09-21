@@ -1,16 +1,13 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useTransition, type FormEvent } from "react";
 import confetti from "canvas-confetti";
 import { Check, Send } from "lucide-react";
+import { submitRsvp } from "@/app/actions/invitations";
 import { FadeIn } from "@/components/invitation/FadeIn";
 import { guestSectionClass } from "@/components/invitation/theme-utils";
 import { Button } from "@/components/ui/button";
 import type { InvitationData } from "@/lib/invitation";
-import {
-  rsvpStorageKey,
-  type RsvpPayload,
-} from "@/lib/invitation-guest";
 import { cn } from "@/lib/utils";
 
 export function RsvpForm({
@@ -26,6 +23,7 @@ export function RsvpForm({
   const [note, setNote] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   if (!data.rsvpEnabled) return null;
 
@@ -35,31 +33,30 @@ export function RsvpForm({
       setError("Lütfen ismini yaz.");
       return;
     }
-    const payload: RsvpPayload = {
-      name: name.trim(),
-      status,
-      guests: status === "yes" ? Math.max(1, guests) : 0,
-      note: note.trim(),
-      createdAt: new Date().toISOString(),
-    };
-    try {
-      const key = rsvpStorageKey(slug);
-      const prev = JSON.parse(
-        window.localStorage.getItem(key) || "[]"
-      ) as RsvpPayload[];
-      window.localStorage.setItem(key, JSON.stringify([...prev, payload]));
-    } catch {
-      // ignore storage failures in demo
-    }
 
-    void confetti({
-      particleCount: 110,
-      spread: 78,
-      origin: { y: 0.55 },
-      colors: ["#8B3A3A", "#C9A36A", "#F3E6D8", "#D4A5A5"],
-    });
-    setSent(true);
     setError("");
+    startTransition(async () => {
+      const result = await submitRsvp({
+        slug,
+        name: name.trim(),
+        status,
+        guests: status === "yes" ? Math.max(1, guests) : 0,
+        note: note.trim(),
+      });
+
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+
+      void confetti({
+        particleCount: 110,
+        spread: 78,
+        origin: { y: 0.55 },
+        colors: ["#8B3A3A", "#C9A36A", "#F3E6D8", "#D4A5A5"],
+      });
+      setSent(true);
+    });
   }
 
   return (
@@ -157,9 +154,13 @@ export function RsvpForm({
 
             {error ? <p className="text-sm text-primary">{error}</p> : null}
 
-            <Button type="submit" className="h-11 w-full rounded-full">
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="h-11 w-full rounded-full"
+            >
               <Send className="size-4" />
-              Gönder
+              {isPending ? "Gönderiliyor…" : "Gönder"}
             </Button>
           </form>
         )}

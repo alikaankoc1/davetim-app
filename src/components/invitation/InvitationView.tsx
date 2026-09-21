@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { BottomBar } from "@/components/invitation/BottomBar";
 import { Countdown } from "@/components/invitation/Countdown";
 import { EventDetails } from "@/components/invitation/EventDetails";
@@ -9,26 +8,9 @@ import { HeroSection } from "@/components/invitation/HeroSection";
 import { PhotoGallery } from "@/components/invitation/PhotoGallery";
 import { RsvpForm } from "@/components/invitation/RsvpForm";
 import { getTemplateById } from "@/data/templates";
-import {
-  loadInvitationBySlug,
-  type StoredInvitation,
-} from "@/lib/invitation-guest";
+import type { StoredInvitation } from "@/lib/invitation-guest";
 
-export function InvitationView({ slug }: { slug: string }) {
-  const [data, setData] = useState<StoredInvitation | null>(null);
-
-  useEffect(() => {
-    setData(loadInvitationBySlug(slug));
-  }, [slug]);
-
-  if (!data) {
-    return (
-      <div className="flex min-h-svh items-center justify-center bg-background">
-        <p className="text-sm text-muted-foreground">Davetiye yükleniyor…</p>
-      </div>
-    );
-  }
-
+export function InvitationView({ data }: { data: StoredInvitation }) {
   const template = getTemplateById(data.theme);
 
   return (

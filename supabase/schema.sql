@@ -63,6 +63,12 @@ alter table public.invitations enable row level security;
 alter table public.rsvps enable row level security;
 alter table public.orders enable row level security;
 
+-- API rolleri (anon / authenticated) tabloya erişebilsin
+grant usage on schema public to anon, authenticated;
+grant select, insert, update on table public.invitations to anon, authenticated;
+grant select, insert on table public.rsvps to anon, authenticated;
+grant select, insert, update on table public.orders to anon, authenticated;
+
 -- Policy'ler tekrar çalıştırılabilir olsun
 drop policy if exists "Public can read published invitations" on public.invitations;
 drop policy if exists "Users manage own invitations" on public.invitations;
@@ -105,3 +111,22 @@ create policy "Users manage own orders"
   on public.orders for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- Auth eklenene kadar geçici (sonra silinecek)
+drop policy if exists "Temp public can insert invitations" on public.invitations;
+drop policy if exists "Temp public can update invitations" on public.invitations;
+drop policy if exists "Temp public can select invitations" on public.invitations;
+
+create policy "Temp public can insert invitations"
+  on public.invitations for insert
+  with check (true);
+
+create policy "Temp public can update invitations"
+  on public.invitations for update
+  using (true)
+  with check (true);
+
+-- Upsert (aynı slug güncelleme) için gerekli
+create policy "Temp public can select invitations"
+  on public.invitations for select
+  using (true);

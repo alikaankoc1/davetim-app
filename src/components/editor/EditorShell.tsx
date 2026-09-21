@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Eye, Sparkles } from "lucide-react";
+import { publishInvitation } from "@/app/actions/invitations";
 import { Button } from "@/components/ui/button";
 import { PhonePreview } from "@/components/editor/PhonePreview";
 import { PreviewDrawer } from "@/components/editor/PreviewDrawer";
@@ -35,6 +36,8 @@ function EditorInner({
   const { data, slug } = useInvitation();
   const [step, setStep] = useState(startStep);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const hasTemplate = isTemplateId(data.theme);
   const canFinish = data.hostA.trim().length > 0;
@@ -78,9 +81,19 @@ function EditorInner({
       setStep(2);
       return;
     }
+
+    setSaveError("");
     const payload = { ...data, slug };
     window.localStorage.setItem(INVITATION_STORAGE_KEY, JSON.stringify(payload));
-    router.push(`/basarili?slug=${encodeURIComponent(slug)}`);
+
+    startTransition(async () => {
+      const result = await publishInvitation(data, slug);
+      if (!result.ok) {
+        setSaveError(result.error);
+        return;
+      }
+      router.push(`/basarili?slug=${encodeURIComponent(result.slug)}`);
+    });
   }
 
   const showPhone = step > 1 && hasTemplate;
@@ -160,13 +173,20 @@ function EditorInner({
               Geri
             </Button>
 
+            {saveError ? (
+              <p className="w-full text-sm text-primary sm:order-first sm:mr-auto">
+                {saveError}
+              </p>
+            ) : null}
+
             {isLast ? (
               <Button
                 type="button"
                 onClick={complete}
+                disabled={isPending}
                 className="h-11 w-full rounded-full px-6 shadow-[0_12px_36px_-8px_oklch(0.42_0.11_22_/_0.5)] sm:w-auto"
               >
-                Davetiyeyi Tamamla ve Paylaş
+                {isPending ? "Kaydediliyor…" : "Davetiyeyi Tamamla ve Paylaş"}
                 <ArrowRight className="size-4" />
               </Button>
             ) : (

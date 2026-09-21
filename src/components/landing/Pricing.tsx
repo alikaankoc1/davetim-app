@@ -129,7 +129,7 @@ export function Pricing() {
               <Button
                 nativeButton={false}
                 variant={plan.featured ? "default" : "outline"}
-                render={<a href="/olustur" />}
+                render={<a href={`/odeme?paket=${plan.id}`} />}
                 className={cn(
                   "mt-8 h-11 rounded-full",
                   plan.featured &&
