@@ -1,19 +1,44 @@
 "use client";
 
+import { useRef, type MouseEvent } from "react";
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-function launchConfetti() {
-  const colors = ["#8B3A3A", "#C9A36A", "#F3E6D8", "#D4A5A5"];
+const CONFETTI_COLORS = ["#8B3A3A", "#C9A36A", "#F3E6D8", "#D4A5A5"];
+const NAVIGATE_DELAY_MS = 1100;
+
+function launchConfetti(originX = 0.5) {
   void confetti({
-    particleCount: 70,
-    spread: 64,
-    origin: { y: 0.72 },
-    colors,
-    scalar: 0.85,
+    particleCount: 90,
+    spread: 72,
+    startVelocity: 42,
+    origin: { x: originX, y: 0.72 },
+    colors: CONFETTI_COLORS,
+    scalar: 0.95,
+    ticks: 220,
   });
+  window.setTimeout(() => {
+    void confetti({
+      particleCount: 45,
+      angle: 60,
+      spread: 52,
+      origin: { x: Math.max(0.15, originX - 0.2), y: 0.78 },
+      colors: CONFETTI_COLORS,
+      scalar: 0.85,
+      ticks: 180,
+    });
+    void confetti({
+      particleCount: 45,
+      angle: 120,
+      spread: 52,
+      origin: { x: Math.min(0.85, originX + 0.2), y: 0.78 },
+      colors: CONFETTI_COLORS,
+      scalar: 0.85,
+      ticks: 180,
+    });
+  }, 160);
 }
 
 function InvitationCard() {
@@ -116,6 +141,32 @@ function PhoneMockup() {
 }
 
 export function Hero() {
+  const navigatingRef = useRef(false);
+
+  function handleCreateClick(event: MouseEvent<HTMLAnchorElement>) {
+    if (
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey ||
+      event.button !== 0
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    if (navigatingRef.current) return;
+    navigatingRef.current = true;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const originX = (rect.left + rect.width / 2) / window.innerWidth;
+    launchConfetti(originX);
+
+    window.setTimeout(() => {
+      window.location.assign("/olustur");
+    }, NAVIGATE_DELAY_MS);
+  }
+
   return (
     <section
       id="hero"
@@ -167,8 +218,7 @@ export function Hero() {
           >
             <Button
               nativeButton={false}
-              render={<a href="/olustur" />}
-              onClick={launchConfetti}
+              render={<a href="/olustur" onClick={handleCreateClick} />}
               className="relative h-12 w-full rounded-full px-7 text-base shadow-[0_12px_40px_-6px_oklch(0.42_0.11_22_/_0.7)] ring-1 ring-white/20 transition-shadow hover:shadow-[0_16px_50px_-4px_oklch(0.42_0.11_22_/_0.85)] sm:w-auto"
             >
               <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-full">
