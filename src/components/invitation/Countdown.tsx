@@ -19,8 +19,8 @@ type Remains = {
   done: boolean;
 };
 
-function calcRemains(target: Date): Remains {
-  const diff = target.getTime() - Date.now();
+function calcRemains(targetMs: number): Remains {
+  const diff = targetMs - Date.now();
   if (diff <= 0) {
     return { days: 0, hours: 0, minutes: 0, seconds: 0, done: true };
   }
@@ -38,18 +38,21 @@ export function Countdown({
   data: InvitationData;
   template: InvitationTemplate;
 }) {
-  const target = eventDateTime(data);
+  const targetMs = eventDateTime(data)?.getTime() ?? null;
   const [remains, setRemains] = useState<Remains | null>(null);
 
   useEffect(() => {
-    if (!target) return;
-    const tick = () => setRemains(calcRemains(target));
+    if (targetMs == null) {
+      setRemains(null);
+      return;
+    }
+    const tick = () => setRemains(calcRemains(targetMs));
     tick();
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
-  }, [target]);
+  }, [targetMs]);
 
-  if (!target) return null;
+  if (targetMs == null) return null;
 
   const cells = remains
     ? [
