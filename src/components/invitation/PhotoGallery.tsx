@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Camera, ImagePlus, X } from "lucide-react";
+import { Camera, ImagePlus } from "lucide-react";
 import {
   getPublishedInvitationId,
   listPhotosBySlug,
 } from "@/app/actions/photos";
-import type { AlbumPhoto } from "@/lib/photos";
 import { PHOTOS_BUCKET } from "@/lib/photos";
 import { FadeIn } from "@/components/invitation/FadeIn";
 import { guestSectionClass } from "@/components/invitation/theme-utils";
@@ -63,12 +61,12 @@ function compressToBlob(
 
 export function PhotoGallery({ slug }: { slug: string }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [photos, setPhotos] = useState<AlbumPhoto[]>([]);
+  const [photoCount, setPhotoCount] = useState(0);
   const [invitationId, setInvitationId] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [lightbox, setLightbox] = useState<AlbumPhoto | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
   const [, startTransition] = useTransition();
 
@@ -82,7 +80,7 @@ export function PhotoGallery({ slug }: { slug: string }) {
       ]);
       if (cancelled) return;
       setInvitationId(id);
-      setPhotos(list);
+      setPhotoCount(list.length);
       setLoading(false);
     });
     return () => {
@@ -102,10 +100,11 @@ export function PhotoGallery({ slug }: { slug: string }) {
 
     setBusy(true);
     setError("");
+    setSuccess("");
     try {
       const supabase = createClient();
-      const room = Math.max(0, MAX_PHOTOS - photos.length);
-      const uploaded: AlbumPhoto[] = [];
+      const room = Math.max(0, MAX_PHOTOS - photoCount);
+      let uploaded = 0;
 
       for (const file of files.slice(0, room)) {
         let blob: Blob;
@@ -136,34 +135,29 @@ export function PhotoGallery({ slug }: { slug: string }) {
           data: { publicUrl },
         } = supabase.storage.from(PHOTOS_BUCKET).getPublicUrl(path);
 
-        const { data: row, error: insertError } = await supabase
-          .from("photos")
-          .insert({
-            invitation_id: invitationId,
-            storage_path: path,
-            public_url: publicUrl,
-            file_name: file.name || "foto.jpg",
-          })
-          .select("id, public_url, file_name, created_at, storage_path")
-          .single();
+        const { error: insertError } = await supabase.from("photos").insert({
+          invitation_id: invitationId,
+          storage_path: path,
+          public_url: publicUrl,
+          file_name: file.name || "foto.jpg",
+        });
 
-        if (insertError || !row) {
-          setError(insertError?.message || "Kayıt başarısız.");
+        if (insertError) {
+          setError(insertError.message || "Kayıt başarısız.");
           await supabase.storage.from(PHOTOS_BUCKET).remove([path]);
           continue;
         }
 
-        uploaded.push({
-          id: row.id as string,
-          publicUrl: String(row.public_url),
-          fileName: String(row.file_name ?? ""),
-          createdAt: String(row.created_at ?? ""),
-          storagePath: String(row.storage_path ?? ""),
-        });
+        uploaded += 1;
       }
 
-      if (uploaded.length) {
-        setPhotos((prev) => [...uploaded, ...prev].slice(0, MAX_PHOTOS));
+      if (uploaded > 0) {
+        setPhotoCount((prev) => Math.min(MAX_PHOTOS, prev + uploaded));
+        setSuccess(
+          uploaded === 1
+            ? "Fotoğrafın çifte iletildi. Teşekkürler!"
+            : `${uploaded} fotoğraf çifte iletildi. Teşekkürler!`
+        );
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Yükleme başarısız.");
@@ -221,7 +215,7 @@ export function PhotoGallery({ slug }: { slug: string }) {
               type="button"
               onClick={() => inputRef.current?.click()}
               disabled={
-                busy || loading || !invitationId || photos.length >= MAX_PHOTOS
+                busy || loading || !invitationId || photoCount >= MAX_PHOTOS
               }
               className="h-11 rounded-full"
             >
@@ -235,6 +229,9 @@ export function PhotoGallery({ slug }: { slug: string }) {
             </p>
           ) : null}
           {error ? <p className="mt-3 text-sm text-primary">{error}</p> : null}
+          {success ? (
+            <p className="mt-3 text-sm text-foreground/80">{success}</p>
+          ) : null}
           <input
             ref={inputRef}
             type="file"
@@ -248,65 +245,7 @@ export function PhotoGallery({ slug }: { slug: string }) {
             }}
           />
         </div>
-
-        {loading ? (
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Albüm yükleniyor…
-          </p>
-        ) : photos.length > 0 ? (
-          <div className="mt-6 columns-2 gap-3 sm:columns-3">
-            {photos.map((photo) => (
-              <button
-                key={photo.id}
-                type="button"
-                onClick={() => setLightbox(photo)}
-                className="mb-3 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-border/60"
-              >
-                <img
-                  src={photo.publicUrl}
-                  alt={photo.fileName || "Fotoğraf"}
-                  className="h-auto w-full object-cover transition hover:scale-[1.02]"
-                />
-              </button>
-            ))}
-          </div>
-        ) : (
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Henüz fotoğraf yok. İlk kareyi sen yükle.
-          </p>
-        )}
       </FadeIn>
-
-      <AnimatePresence>
-        {lightbox ? (
-          <motion.div
-            className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/80 p-4 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setLightbox(null)}
-          >
-            <button
-              type="button"
-              aria-label="Kapat"
-              className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-background/90"
-              onClick={() => setLightbox(null)}
-            >
-              <X className="size-4" />
-            </button>
-            <motion.img
-              key={lightbox.id}
-              src={lightbox.publicUrl}
-              alt={lightbox.fileName || "Fotoğraf"}
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              className="max-h-[85svh] max-w-full rounded-2xl object-contain shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
     </section>
   );
 }
