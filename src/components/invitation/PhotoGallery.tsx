@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Camera, ImagePlus, X } from "lucide-react";
+import { Camera, ImagePlus, Trash2, X } from "lucide-react";
 import { FadeIn } from "@/components/invitation/FadeIn";
 import { guestSectionClass } from "@/components/invitation/theme-utils";
 import { Button } from "@/components/ui/button";
@@ -115,6 +115,12 @@ export function PhotoGallery({ slug }: { slug: string }) {
     }
   }
 
+  function removePhoto(id: string) {
+    const next = photos.filter((photo) => photo.id !== id);
+    persist(next);
+    if (lightbox?.id === id) setLightbox(null);
+  }
+
   return (
     <section id="fotograf" className="scroll-mt-24 bg-background py-16 sm:py-20">
       <FadeIn className={guestSectionClass()}>
@@ -127,6 +133,7 @@ export function PhotoGallery({ slug }: { slug: string }) {
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Etkinlikte çektiğin fotoğrafları yükle; herkes aynı albümde buluşsun.
+            İstemediğin kareyi çöp ikonuyla silebilirsin.
           </p>
         </div>
 
@@ -186,18 +193,33 @@ export function PhotoGallery({ slug }: { slug: string }) {
         {photos.length > 0 ? (
           <div className="mt-6 columns-2 gap-3 sm:columns-3">
             {photos.map((photo) => (
-              <button
+              <div
                 key={photo.id}
-                type="button"
-                onClick={() => setLightbox(photo)}
-                className="mb-3 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-border/60"
+                className="group relative mb-3 break-inside-avoid overflow-hidden rounded-2xl border border-border/60"
               >
-                <img
-                  src={photo.src}
-                  alt={photo.name}
-                  className="h-auto w-full object-cover transition hover:scale-[1.02]"
-                />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setLightbox(photo)}
+                  className="block w-full"
+                >
+                  <img
+                    src={photo.src}
+                    alt={photo.name}
+                    className="h-auto w-full object-cover transition hover:scale-[1.02]"
+                  />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Fotoğrafı sil"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removePhoto(photo.id);
+                  }}
+                  className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-full bg-background/95 text-primary shadow-sm opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100"
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+              </div>
             ))}
           </div>
         ) : (
@@ -216,14 +238,27 @@ export function PhotoGallery({ slug }: { slug: string }) {
             exit={{ opacity: 0 }}
             onClick={() => setLightbox(null)}
           >
-            <button
-              type="button"
-              aria-label="Kapat"
-              className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-background/90"
-              onClick={() => setLightbox(null)}
-            >
-              <X className="size-4" />
-            </button>
+            <div className="absolute top-4 right-4 flex gap-2">
+              <button
+                type="button"
+                aria-label="Fotoğrafı sil"
+                className="flex size-10 items-center justify-center rounded-full bg-background/90 text-primary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removePhoto(lightbox.id);
+                }}
+              >
+                <Trash2 className="size-4" />
+              </button>
+              <button
+                type="button"
+                aria-label="Kapat"
+                className="flex size-10 items-center justify-center rounded-full bg-background/90"
+                onClick={() => setLightbox(null)}
+              >
+                <X className="size-4" />
+              </button>
+            </div>
             <motion.img
               key={lightbox.id}
               src={lightbox.src}

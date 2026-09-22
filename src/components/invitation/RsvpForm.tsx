@@ -63,10 +63,7 @@ export function RsvpForm({
     <section id="rsvp" className="scroll-mt-24 bg-background py-16 sm:py-20">
       <FadeIn className={guestSectionClass()}>
         <div className="text-center">
-          <p className="text-xs font-medium tracking-[0.28em] text-primary uppercase">
-            LCV
-          </p>
-          <h2 className="font-heading mt-3 text-3xl font-semibold tracking-tight">
+          <h2 className="font-heading text-3xl font-semibold tracking-tight">
             Katılımını <span className="italic text-primary">bildir</span>
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
