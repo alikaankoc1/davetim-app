@@ -14,7 +14,7 @@ export function ExtrasStep() {
         Ekstra <span className="italic text-primary">özellikler</span>
       </h2>
       <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-        Müziği, hediye notunu ve LCV’yi dilediğin gibi ayarla.
+        Müziği, hediye notunu ve katılım formunu dilediğin gibi ayarla.
       </p>
 
       <div className="mt-8 flex flex-col gap-5">
@@ -49,7 +49,7 @@ export function ExtrasStep() {
 
         <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card px-4 py-4">
           <div>
-            <p className="text-sm font-medium">LCV / RSVP formu</p>
+            <p className="text-sm font-medium">Katılım formu</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Açıkken misafirler “geliyorum / gelemiyorum” diye katılım bildirir.
               İsim alanı değil; davetli listesi için bir yanıttır.
