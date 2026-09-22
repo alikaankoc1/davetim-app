@@ -58,16 +58,30 @@ create table if not exists public.orders (
 
 create index if not exists orders_invitation_id_idx on public.orders (invitation_id);
 
+-- Fotoğraf albümü
+create table if not exists public.photos (
+  id uuid primary key default gen_random_uuid(),
+  invitation_id uuid not null references public.invitations (id) on delete cascade,
+  storage_path text not null unique,
+  public_url text not null,
+  file_name text not null default '',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists photos_invitation_id_idx on public.photos (invitation_id);
+
 -- RLS
 alter table public.invitations enable row level security;
 alter table public.rsvps enable row level security;
 alter table public.orders enable row level security;
+alter table public.photos enable row level security;
 
 -- API rolleri (anon / authenticated) tabloya erişebilsin
 grant usage on schema public to anon, authenticated;
 grant select, insert, update on table public.invitations to anon, authenticated;
 grant select, insert on table public.rsvps to anon, authenticated;
 grant select, insert, update on table public.orders to anon, authenticated;
+grant select, insert, delete on table public.photos to anon, authenticated;
 
 -- Policy'ler tekrar çalıştırılabilir olsun
 drop policy if exists "Public can read published invitations" on public.invitations;
@@ -99,6 +113,37 @@ create policy "Anyone can insert rsvp for published"
 
 create policy "Owners can read rsvps"
   on public.rsvps for select
+  using (
+    exists (
+      select 1 from public.invitations i
+      where i.id = invitation_id and i.user_id = auth.uid()
+    )
+  );
+
+drop policy if exists "Public can read photos of published" on public.photos;
+drop policy if exists "Anyone can insert photos for published" on public.photos;
+drop policy if exists "Owners can delete photos" on public.photos;
+
+create policy "Public can read photos of published"
+  on public.photos for select
+  using (
+    exists (
+      select 1 from public.invitations i
+      where i.id = invitation_id and i.status = 'published'
+    )
+  );
+
+create policy "Anyone can insert photos for published"
+  on public.photos for insert
+  with check (
+    exists (
+      select 1 from public.invitations i
+      where i.id = invitation_id and i.status = 'published'
+    )
+  );
+
+create policy "Owners can delete photos"
+  on public.photos for delete
   using (
     exists (
       select 1 from public.invitations i

@@ -61,14 +61,30 @@ export default async function KatilimPage({ params }: PageProps) {
                 : ""}
             </p>
           </div>
-          <Button
-            nativeButton={false}
-            variant="outline"
-            render={<a href={`/${invitation.slug}`} target="_blank" rel="noreferrer" />}
-            className="h-10 rounded-full px-4 text-sm"
-          >
-            Davetiyeyi aç
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              nativeButton={false}
+              variant="outline"
+              render={<a href={`/panel/${id}/album`} />}
+              className="h-10 rounded-full px-4 text-sm"
+            >
+              Albüm
+            </Button>
+            <Button
+              nativeButton={false}
+              variant="outline"
+              render={
+                <a
+                  href={`/${invitation.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                />
+              }
+              className="h-10 rounded-full px-4 text-sm"
+            >
+              Davetiyeyi aç
+            </Button>
+          </div>
         </div>
 
         <div className="mt-8 grid gap-3 sm:grid-cols-3">

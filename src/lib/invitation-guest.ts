@@ -71,6 +71,3 @@ export function eventDateTime(data: InvitationData) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-export function photosStorageKey(slug: string) {
-  return `davetim-photos-${slug}`;
-}

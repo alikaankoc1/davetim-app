@@ -1,33 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Camera, ImagePlus, Trash2, X } from "lucide-react";
+import { Camera, ImagePlus, X } from "lucide-react";
+import {
+  getPublishedInvitationId,
+  listPhotosBySlug,
+  PHOTOS_BUCKET,
+  type AlbumPhoto,
+} from "@/app/actions/photos";
 import { FadeIn } from "@/components/invitation/FadeIn";
 import { guestSectionClass } from "@/components/invitation/theme-utils";
 import { Button } from "@/components/ui/button";
-import { photosStorageKey } from "@/lib/invitation-guest";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
-type GalleryPhoto = {
-  id: string;
-  src: string;
-  name: string;
-};
+const MAX_PHOTOS = 48;
+const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
-const MAX_PHOTOS = 24;
-const MAX_DATA_URL_CHARS = 400_000;
-
-async function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-}
-
-function compressImage(file: File, maxSide = 1280, quality = 0.72): Promise<string> {
+function compressToBlob(
+  file: File,
+  maxSide = 1600,
+  quality = 0.78
+): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -46,7 +41,17 @@ function compressImage(file: File, maxSide = 1280, quality = 0.72): Promise<stri
       }
       ctx.drawImage(img, 0, 0, width, height);
       URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL("image/jpeg", quality));
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("blob"));
+            return;
+          }
+          resolve(blob);
+        },
+        "image/jpeg",
+        quality
+      );
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
@@ -58,67 +63,113 @@ function compressImage(file: File, maxSide = 1280, quality = 0.72): Promise<stri
 
 export function PhotoGallery({ slug }: { slug: string }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
+  const [photos, setPhotos] = useState<AlbumPhoto[]>([]);
+  const [invitationId, setInvitationId] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [lightbox, setLightbox] = useState<GalleryPhoto | null>(null);
+  const [lightbox, setLightbox] = useState<AlbumPhoto | null>(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(photosStorageKey(slug));
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as GalleryPhoto[];
-      if (Array.isArray(parsed)) setPhotos(parsed.slice(0, MAX_PHOTOS));
-    } catch {
-      // ignore
-    }
+    let cancelled = false;
+    startTransition(async () => {
+      setLoading(true);
+      const [id, list] = await Promise.all([
+        getPublishedInvitationId(slug),
+        listPhotosBySlug(slug),
+      ]);
+      if (cancelled) return;
+      setInvitationId(id);
+      setPhotos(list);
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [slug]);
 
-  const persist = useCallback(
-    (next: GalleryPhoto[]) => {
-      setPhotos(next);
-      try {
-        const slim = next.filter((p) => p.src.length < MAX_DATA_URL_CHARS);
-        window.localStorage.setItem(
-          photosStorageKey(slug),
-          JSON.stringify(slim.slice(0, MAX_PHOTOS))
-        );
-      } catch {
-        // quota exceeded — keep in memory only
-      }
-    },
-    [slug]
-  );
-
   async function addFiles(fileList: FileList | File[]) {
-    const files = Array.from(fileList).filter((f) => f.type.startsWith("image/"));
+    if (!invitationId) {
+      setError("Bu davetiye için albüm henüz aktif değil.");
+      return;
+    }
+    const files = Array.from(fileList).filter((f) =>
+      f.type.startsWith("image/")
+    );
     if (!files.length) return;
+
     setBusy(true);
+    setError("");
     try {
-      const created: GalleryPhoto[] = [];
-      for (const file of files.slice(0, MAX_PHOTOS - photos.length)) {
-        let src: string;
+      const supabase = createClient();
+      const room = Math.max(0, MAX_PHOTOS - photos.length);
+      const uploaded: AlbumPhoto[] = [];
+
+      for (const file of files.slice(0, room)) {
+        let blob: Blob;
         try {
-          src = await compressImage(file);
+          blob = await compressToBlob(file);
         } catch {
-          src = await fileToDataUrl(file);
+          if (file.size > MAX_FILE_BYTES) {
+            setError("Dosya çok büyük (max 5MB).");
+            continue;
+          }
+          blob = file;
         }
-        created.push({
-          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-          src,
-          name: file.name,
+
+        const path = `${invitationId}/${crypto.randomUUID()}.jpg`;
+        const { error: uploadError } = await supabase.storage
+          .from(PHOTOS_BUCKET)
+          .upload(path, blob, {
+            contentType: "image/jpeg",
+            upsert: false,
+          });
+
+        if (uploadError) {
+          setError(uploadError.message);
+          continue;
+        }
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from(PHOTOS_BUCKET).getPublicUrl(path);
+
+        const { data: row, error: insertError } = await supabase
+          .from("photos")
+          .insert({
+            invitation_id: invitationId,
+            storage_path: path,
+            public_url: publicUrl,
+            file_name: file.name || "foto.jpg",
+          })
+          .select("id, public_url, file_name, created_at, storage_path")
+          .single();
+
+        if (insertError || !row) {
+          setError(insertError?.message || "Kayıt başarısız.");
+          await supabase.storage.from(PHOTOS_BUCKET).remove([path]);
+          continue;
+        }
+
+        uploaded.push({
+          id: row.id as string,
+          publicUrl: String(row.public_url),
+          fileName: String(row.file_name ?? ""),
+          createdAt: String(row.created_at ?? ""),
+          storagePath: String(row.storage_path ?? ""),
         });
       }
-      if (created.length) persist([...created, ...photos].slice(0, MAX_PHOTOS));
+
+      if (uploaded.length) {
+        setPhotos((prev) => [...uploaded, ...prev].slice(0, MAX_PHOTOS));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Yükleme başarısız.");
     } finally {
       setBusy(false);
     }
-  }
-
-  function removePhoto(id: string) {
-    const next = photos.filter((photo) => photo.id !== id);
-    persist(next);
-    if (lightbox?.id === id) setLightbox(null);
   }
 
   return (
@@ -132,8 +183,8 @@ export function PhotoGallery({ slug }: { slug: string }) {
             Anıları <span className="italic text-primary">paylaş</span>
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Etkinlikte çektiğin fotoğrafları yükle. Not: şu an yalnızca bu
-            cihazda saklanır; ortak albüm yakında.
+            Etkinlikte çektiğin fotoğrafları yükle; çift bunları panelinden
+            görür ve indirebilir.
           </p>
         </div>
 
@@ -169,13 +220,21 @@ export function PhotoGallery({ slug }: { slug: string }) {
             <Button
               type="button"
               onClick={() => inputRef.current?.click()}
-              disabled={busy || photos.length >= MAX_PHOTOS}
+              disabled={
+                busy || loading || !invitationId || photos.length >= MAX_PHOTOS
+              }
               className="h-11 rounded-full"
             >
               <Camera className="size-4" />
               {busy ? "Yükleniyor…" : "Fotoğraf seç / çek"}
             </Button>
           </div>
+          {!invitationId && !loading ? (
+            <p className="mt-3 text-xs text-muted-foreground">
+              Albüm yalnızca yayınlanmış davetiyelerde açılır.
+            </p>
+          ) : null}
+          {error ? <p className="mt-3 text-sm text-primary">{error}</p> : null}
           <input
             ref={inputRef}
             type="file"
@@ -190,36 +249,25 @@ export function PhotoGallery({ slug }: { slug: string }) {
           />
         </div>
 
-        {photos.length > 0 ? (
+        {loading ? (
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Albüm yükleniyor…
+          </p>
+        ) : photos.length > 0 ? (
           <div className="mt-6 columns-2 gap-3 sm:columns-3">
             {photos.map((photo) => (
-              <div
+              <button
                 key={photo.id}
-                className="group relative mb-3 break-inside-avoid overflow-hidden rounded-2xl border border-border/60"
+                type="button"
+                onClick={() => setLightbox(photo)}
+                className="mb-3 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-border/60"
               >
-                <button
-                  type="button"
-                  onClick={() => setLightbox(photo)}
-                  className="block w-full"
-                >
-                  <img
-                    src={photo.src}
-                    alt={photo.name}
-                    className="h-auto w-full object-cover transition hover:scale-[1.02]"
-                  />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Fotoğrafı sil"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removePhoto(photo.id);
-                  }}
-                  className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-full bg-background/95 text-primary shadow-sm opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100"
-                >
-                  <Trash2 className="size-3.5" />
-                </button>
-              </div>
+                <img
+                  src={photo.publicUrl}
+                  alt={photo.fileName || "Fotoğraf"}
+                  className="h-auto w-full object-cover transition hover:scale-[1.02]"
+                />
+              </button>
             ))}
           </div>
         ) : (
@@ -238,31 +286,18 @@ export function PhotoGallery({ slug }: { slug: string }) {
             exit={{ opacity: 0 }}
             onClick={() => setLightbox(null)}
           >
-            <div className="absolute top-4 right-4 flex gap-2">
-              <button
-                type="button"
-                aria-label="Fotoğrafı sil"
-                className="flex size-10 items-center justify-center rounded-full bg-background/90 text-primary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removePhoto(lightbox.id);
-                }}
-              >
-                <Trash2 className="size-4" />
-              </button>
-              <button
-                type="button"
-                aria-label="Kapat"
-                className="flex size-10 items-center justify-center rounded-full bg-background/90"
-                onClick={() => setLightbox(null)}
-              >
-                <X className="size-4" />
-              </button>
-            </div>
+            <button
+              type="button"
+              aria-label="Kapat"
+              className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-background/90"
+              onClick={() => setLightbox(null)}
+            >
+              <X className="size-4" />
+            </button>
             <motion.img
               key={lightbox.id}
-              src={lightbox.src}
-              alt={lightbox.name}
+              src={lightbox.publicUrl}
+              alt={lightbox.fileName || "Fotoğraf"}
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}

@@ -30,7 +30,7 @@ export default async function PanelPage() {
               Davetiyelerim
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Yayınladığın davetiyeleri yönet; katılım yanıtlarını gör.
+              Yayınladığın davetiyeleri yönet; katılım ve albümü gör.
             </p>
           </div>
           <Button
@@ -97,10 +97,18 @@ export default async function PanelPage() {
                       </Button>
                       <Button
                         nativeButton={false}
+                        variant="outline"
                         render={<a href={`/panel/${item.id}/katilim`} />}
                         className="h-10 rounded-full px-4 text-sm"
                       >
-                        Katılım listesi
+                        Katılım
+                      </Button>
+                      <Button
+                        nativeButton={false}
+                        render={<a href={`/panel/${item.id}/album`} />}
+                        className="h-10 rounded-full px-4 text-sm"
+                      >
+                        Albüm
                       </Button>
                     </div>
                   </div>
