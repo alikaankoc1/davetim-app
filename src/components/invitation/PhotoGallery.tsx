@@ -6,9 +6,9 @@ import { Camera, ImagePlus, X } from "lucide-react";
 import {
   getPublishedInvitationId,
   listPhotosBySlug,
-  PHOTOS_BUCKET,
-  type AlbumPhoto,
 } from "@/app/actions/photos";
+import type { AlbumPhoto } from "@/lib/photos";
+import { PHOTOS_BUCKET } from "@/lib/photos";
 import { FadeIn } from "@/components/invitation/FadeIn";
 import { guestSectionClass } from "@/components/invitation/theme-utils";
 import { Button } from "@/components/ui/button";

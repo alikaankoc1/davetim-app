@@ -1,17 +1,10 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { getOwnerInvitation } from "@/app/actions/panel";
+import { createClient } from "@/lib/supabase/server";
+import { PHOTOS_BUCKET, type AlbumPhoto } from "@/lib/photos";
 
-export type AlbumPhoto = {
-  id: string;
-  publicUrl: string;
-  fileName: string;
-  createdAt: string;
-  storagePath: string;
-};
-
-const BUCKET = "invitation-photos";
+export type { AlbumPhoto };
 
 export async function listPhotosBySlug(slug: string): Promise<AlbumPhoto[]> {
   const supabase = await createClient();
@@ -103,12 +96,10 @@ export async function deleteOwnerPhoto(
 
   const path = String(photo.storage_path ?? "");
   if (path) {
-    await supabase.storage.from(BUCKET).remove([path]);
+    await supabase.storage.from(PHOTOS_BUCKET).remove([path]);
   }
 
   const { error } = await supabase.from("photos").delete().eq("id", photoId);
   if (error) return { ok: false, error: error.message };
   return { ok: true };
 }
-
-export { BUCKET as PHOTOS_BUCKET };

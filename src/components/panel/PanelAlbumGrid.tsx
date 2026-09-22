@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { Download, Trash2 } from "lucide-react";
-import { deleteOwnerPhoto, type AlbumPhoto } from "@/app/actions/photos";
+import { deleteOwnerPhoto } from "@/app/actions/photos";
+import type { AlbumPhoto } from "@/lib/photos";
 import { Button } from "@/components/ui/button";
 
 export function PanelAlbumGrid({
