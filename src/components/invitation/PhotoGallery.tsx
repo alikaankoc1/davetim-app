@@ -126,14 +126,14 @@ export function PhotoGallery({ slug }: { slug: string }) {
       <FadeIn className={guestSectionClass()}>
         <div className="text-center">
           <p className="text-xs font-medium tracking-[0.28em] text-primary uppercase">
-            QR Albüm
+            Albüm
           </p>
           <h2 className="font-heading mt-3 text-3xl font-semibold tracking-tight">
             Anıları <span className="italic text-primary">paylaş</span>
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Etkinlikte çektiğin fotoğrafları yükle; herkes aynı albümde buluşsun.
-            İstemediğin kareyi çöp ikonuyla silebilirsin.
+            Etkinlikte çektiğin fotoğrafları yükle. Not: şu an yalnızca bu
+            cihazda saklanır; ortak albüm yakında.
           </p>
         </div>
 

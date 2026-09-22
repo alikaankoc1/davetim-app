@@ -23,7 +23,7 @@ export async function generateMetadata({
 
   return {
     title: `${title || "Davetiye"} | Davetim`,
-    description: "Dijital davetiye — tarih, mekan, LCV ve fotoğraf albümü.",
+    description: "Dijital davetiye — tarih, mekan, katılım formu ve fotoğraf albümü.",
   };
 }
 

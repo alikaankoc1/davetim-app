@@ -1,6 +1,5 @@
 import {
   defaultInvitation,
-  INVITATION_STORAGE_KEY,
   makeSlug,
   type InvitationData,
 } from "@/lib/invitation";
@@ -22,15 +21,11 @@ export const mockInvitationData: StoredInvitation = {
   mapsUrl: "https://maps.google.com/?q=The+Plaza+Hotel+Istanbul",
   music: "canon",
   giftNote: "Çiçek yerine bir dilek… IBAN: TR00 0000 0000 0000 0000 0000 00",
-  rsvpEnabled: true,
+  rsvpEnabled: false,
   message:
     "Sizleri bu özel günümüzde yanımızda görmekten mutluluk duyarız.",
   slug: "ali-ayse",
 };
-
-/** Soft ambient preview for non-silent music picks (demo). */
-export const MUSIC_PREVIEW_URL =
-  "https://assets.mixkit.co/music/preview/mixkit-romantic-motivation-instrumental-2083.mp3";
 
 export function parseStoredInvitation(raw: string | null): StoredInvitation | null {
   if (!raw) return null;
@@ -56,32 +51,6 @@ export function parseStoredInvitation(raw: string | null): StoredInvitation | nu
   }
 }
 
-export function loadInvitationBySlug(slug: string): StoredInvitation {
-  const normalized = slug.trim().toLowerCase();
-  if (typeof window !== "undefined") {
-    const stored = parseStoredInvitation(
-      window.localStorage.getItem(INVITATION_STORAGE_KEY)
-    );
-    if (stored && stored.slug.toLowerCase() === normalized) {
-      return stored;
-    }
-  }
-  if (normalized === mockInvitationData.slug) {
-    return mockInvitationData;
-  }
-  return {
-    ...mockInvitationData,
-    slug: normalized,
-    hostA: titleCaseSlug(normalized.split("-")[0] ?? "Davet"),
-    hostB: titleCaseSlug(normalized.split("-")[1] ?? ""),
-  };
-}
-
-function titleCaseSlug(part: string) {
-  if (!part) return "";
-  return part.charAt(0).toUpperCase() + part.slice(1);
-}
-
 export function mapsLinks(mapsUrl: string, address: string, venueName: string) {
   const query = encodeURIComponent(
     mapsUrl || address || venueName || "İstanbul"
@@ -100,18 +69,6 @@ export function eventDateTime(data: InvitationData) {
   const iso = `${data.date}T${time}:00`;
   const date = new Date(iso);
   return Number.isNaN(date.getTime()) ? null : date;
-}
-
-export type RsvpPayload = {
-  name: string;
-  status: "yes" | "no";
-  guests: number;
-  note: string;
-  createdAt: string;
-};
-
-export function rsvpStorageKey(slug: string) {
-  return `davetim-rsvp-${slug}`;
 }
 
 export function photosStorageKey(slug: string) {

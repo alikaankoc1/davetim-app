@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { LayoutTemplate, PenLine, QrCode } from "lucide-react";
+import { LayoutTemplate, Link2, PenLine } from "lucide-react";
 
 const steps = [
   {
@@ -20,10 +20,10 @@ const steps = [
   },
   {
     step: "03",
-    title: "Linki ve QR Kodunu Paylaş",
+    title: "Linki Paylaş",
     description:
-      "Tek bir bağlantı veya QR kod ile tüm misafirlerinize ulaşın. Baskı, kargo, bekleme yok.",
-    icon: QrCode,
+      "Tek bir bağlantı ile tüm misafirlerinize ulaşın. Baskı, kargo, bekleme yok. QR paylaşımı yakında.",
+    icon: Link2,
   },
 ];
 

@@ -55,8 +55,7 @@ export function SuccessView({ slug }: { slug: string }) {
           Davetiyen <span className="italic text-primary">hazır</span>
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Linki WhatsApp ile paylaşabilirsin. Not: bilgisayarındaki localhost
-          linki başka telefonda açılmaz; site yayınlanınca herkes açabilir.
+          Davetiyen kaydedildi. Linki kopyalayıp WhatsApp ile paylaşabilirsin.
         </p>
 
         <div className="mt-6 rounded-2xl border border-gold/35 bg-secondary/70 px-4 py-3">

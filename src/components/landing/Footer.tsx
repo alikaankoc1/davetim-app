@@ -8,38 +8,6 @@ const footerLinks = [
   { href: "#sss", label: "SSS" },
 ];
 
-function InstagramIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="3" width="18" height="18" rx="5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function XIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className={className}
-      fill="currentColor"
-    >
-      <path d="M18.244 2H21l-6.51 7.44L22 22h-6.79l-4.32-6.53L6.2 22H3.44l7.01-8.01L2 2h6.96l3.9 5.98L18.244 2Zm-1.19 18.2h1.88L7.03 3.7H5.02l12.034 16.5Z" />
-    </svg>
-  );
-}
-
 export function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-border/70 bg-[linear-gradient(180deg,transparent_0%,oklch(0.955_0.014_82)_100%)]">
@@ -53,7 +21,7 @@ export function Footer() {
             <BrandLogo href="#hero" />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
               En özel gününüz için yeni nesil dijital davetiye. Zarif tasarımlar,
-              akıllı LCV ve paylaşılabilir anılar.
+              katılım formu ve paylaşılabilir bağlantı.
             </p>
           </div>
 
@@ -74,49 +42,18 @@ export function Footer() {
 
           <div>
             <p className="text-sm font-semibold text-foreground">İletişim</p>
-            <div className="mt-4 flex items-center gap-3">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Instagram"
-                className="flex size-10 items-center justify-center rounded-full border border-border/80 bg-card text-foreground transition-colors hover:border-primary/40 hover:text-primary"
-              >
-                <InstagramIcon className="size-4" />
-              </a>
-              <a
-                href="https://x.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="X"
-                className="flex size-10 items-center justify-center rounded-full border border-border/80 bg-card text-foreground transition-colors hover:border-primary/40 hover:text-primary"
-              >
-                <XIcon className="size-4" />
-              </a>
-              <a
-                href="mailto:merhaba@davetim.app"
-                aria-label="E-posta"
-                className="flex size-10 items-center justify-center rounded-full border border-border/80 bg-card text-foreground transition-colors hover:border-primary/40 hover:text-primary"
-              >
-                <Mail className="size-4" />
-              </a>
-            </div>
-            <p className="mt-4 text-sm text-muted-foreground">
+            <a
+              href="mailto:merhaba@davetim.app"
+              className="mt-4 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <Mail className="size-4 text-primary" />
               merhaba@davetim.app
-            </p>
+            </a>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border/70 pt-6 text-xs text-muted-foreground sm:flex-row">
+        <div className="mt-12 border-t border-border/70 pt-6 text-center text-xs text-muted-foreground sm:text-left">
           <p>© {new Date().getFullYear()} Davetim. Tüm hakları saklıdır.</p>
-          <div className="flex gap-4">
-            <a href="#sss" className="hover:text-foreground">
-              Gizlilik
-            </a>
-            <a href="#sss" className="hover:text-foreground">
-              KVKK
-            </a>
-          </div>
         </div>
       </div>
     </footer>

@@ -12,32 +12,32 @@ const faqs = [
   {
     question: "Dijital davetiye nedir, basılı davetiyenin yerini alır mı?",
     answer:
-      "Davetim, misafirlerinize WhatsApp, SMS veya QR kod ile ulaştırabileceğiniz şık bir web davetiyesidir. Baskı maliyetini ve kargo sürecini ortadan kaldırır; aynı zamanda LCV, albüm ve harita gibi basılı kartın sunamayacağı özellikler ekler.",
+      "Davetim, misafirlerinize WhatsApp veya bağlantı ile ulaştırabileceğiniz şık bir web davetiyesidir. Baskı ve kargo olmadan; katılım formu, harita, müzik ve geri sayım gibi özellikler sunar.",
   },
   {
     question: "Misafirlerimin uygulama indirmesi gerekir mi?",
     answer:
-      "Hayır. Davetiye her telefonda tarayıcıda açılır. QR albüme fotoğraf yüklemek için de ek bir uygulama gerekmez.",
+      "Hayır. Davetiye her telefonda tarayıcıda açılır; ekstra uygulama gerekmez.",
   },
   {
-    question: "QR kod canlı fotoğraf albümü nasıl çalışır?",
+    question: "Fotoğraf albümü nasıl çalışır?",
     answer:
-      "Davetiyenize özel bir QR kod oluşturulur. Misafirler kodu okuttuğunda albümü açar ve anlık fotoğraf yükler. Tüm görseller sizin panelinizde toplanır.",
+      "Misafirler davetiye sayfasından fotoğraf yükleyebilir. Ortak bulut albümü ve sahibi paneli yakında eklenecek; şu an yüklemeler cihazda saklanır.",
   },
   {
-    question: "LCV / RSVP yanıtlarını nereden görürüm?",
+    question: "Katılım yanıtlarını nereden görürüm?",
     answer:
-      "Misafirlerin katılım tercihleri yönetim paneline anında düşer. Gelen, gelmeyen ve henüz yanıtlamayanları tek ekrandan takip edebilirsiniz.",
+      "Misafirler formu doldurunca yanıtlar sisteme kaydolur. Bunları tek ekranda göreceğiniz yönetim paneli bir sonraki adımda geliyor.",
   },
   {
     question: "Davetiyeyi yayınladıktan sonra düzenleyebilir miyim?",
     answer:
-      "Evet. Tarih, mekan, metin ve görselleri dilediğiniz kadar güncelleyebilirsiniz. Paylaştığınız bağlantı aynı kalır, misafirler her zaman güncel sürümü görür.",
+      "Evet. Aynı bağlantıyla tekrar kaydederek tarih, mekan ve metinleri güncelleyebilirsiniz; misafirler güncel sürümü görür.",
   },
   {
-    question: "Ödeme ve iptal koşulları nedir?",
+    question: "Ödeme nasıl olacak?",
     answer:
-      "Ödeme güvenli altyapı üzerinden alınır. Paketinizi oluşturduktan sonra ihtiyacınıza göre yükseltebilirsiniz. Detaylı iptal koşulları için destek ekibimizle iletişime geçebilirsiniz.",
+      "Ödeme adımı yakında eklenecek. Şimdilik davetiyeyi oluşturup paylaşarak deneyebilirsiniz.",
   },
 ];
 

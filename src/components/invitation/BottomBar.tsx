@@ -8,7 +8,7 @@ export function BottomBar({ data }: { data: InvitationData }) {
   const items = [
     {
       href: "#rsvp",
-      label: "RSVP Et",
+      label: "Katılım",
       icon: HeartHandshake,
       show: data.rsvpEnabled,
     },

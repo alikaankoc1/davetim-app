@@ -12,21 +12,21 @@ import {
 
 const features = [
   {
-    title: "QR Kod Canlı Fotoğraf Albümü",
+    title: "Fotoğraf Albümü",
     description:
-      "Davetliler telefonlarıyla QR kodu okutsun, anında fotoğraf yüklensin. Tüm anılar tek bir zarif albümde toplansın.",
+      "Misafirler davetiye sayfasından kare yükleyebilir. Ortak albüm ve panel desteği yakında geliyor.",
     icon: Images,
   },
   {
-    title: "Akıllı LCV / RSVP Yönetimi",
+    title: "Katılım bildirimi",
     description:
-      "Kimler geliyor, kimler mazeretli — yanıtlar doğrudan paneline düşer. Misafir listeniz her an güncel kalır.",
+      "Misafirler geliyorum / gelemiyorum diye yanıt verir. Yanıtları yönetim panelinde görme özelliği yakında.",
     icon: UserCheck,
   },
   {
     title: "Harita Entegrasyonu",
     description:
-      "Tek dokunuşla Google Maps veya Yandex Navigasyon. Misafirleriniz salonu, nikahı ve after party’yi kaybolmadan bulur.",
+      "Tek dokunuşla Google Maps veya Apple Maps. Misafirleriniz mekanı kaybolmadan bulur.",
     icon: MapPinned,
   },
 ];
@@ -34,7 +34,7 @@ const features = [
 const extras = [
   {
     title: "Fon Müziği",
-    description: "Davetiyeniz açıldığında çalan zarif bir ambiyans.",
+    description: "Misafir müziği açınca çalan zarif bir ambiyans.",
     icon: Music2,
   },
   {
@@ -70,8 +70,8 @@ export function Features() {
             <span className="italic text-primary">deneyim</span>
           </h2>
           <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Sadece bir kart değil: albüm, LCV, yol tarifi ve hatırlatmalar tek
-            yerde.
+            Şablon, katılım formu, yol tarifi, müzik ve geri sayım — tek
+            davetiyede.
           </p>
         </div>
 
