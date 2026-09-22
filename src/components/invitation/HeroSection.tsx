@@ -18,9 +18,9 @@ import {
   formatDisplayDate,
   formatDisplayTime,
   MUSIC_OPTIONS,
+  musicSrc,
   type InvitationData,
 } from "@/lib/invitation";
-import { MUSIC_PREVIEW_URL } from "@/lib/invitation-guest";
 import { cn } from "@/lib/utils";
 
 export function HeroSection({
@@ -32,7 +32,8 @@ export function HeroSection({
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
-  const hasMusic = data.music !== "none";
+  const trackSrc = musicSrc(data.music);
+  const hasMusic = Boolean(trackSrc);
   const musicLabel =
     MUSIC_OPTIONS.find((item) => item.id === data.music)?.label ?? "Müzik";
   const date = formatDisplayDate(data.date);
@@ -41,13 +42,20 @@ export function HeroSection({
   useEffect(() => {
     return () => {
       audioRef.current?.pause();
+      audioRef.current = null;
     };
   }, []);
 
+  useEffect(() => {
+    audioRef.current?.pause();
+    audioRef.current = null;
+    setPlaying(false);
+  }, [trackSrc]);
+
   async function toggleMusic() {
-    if (!hasMusic) return;
+    if (!trackSrc) return;
     if (!audioRef.current) {
-      audioRef.current = new Audio(MUSIC_PREVIEW_URL);
+      audioRef.current = new Audio(trackSrc);
       audioRef.current.loop = true;
       audioRef.current.volume = 0.45;
     }

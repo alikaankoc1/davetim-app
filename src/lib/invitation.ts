@@ -21,16 +21,37 @@ export const THEMES = INVITATION_TEMPLATES.map((template) => ({
 }));
 
 export const MUSIC_OPTIONS = [
-  { id: "none", label: "Sessiz" },
-  { id: "canon", label: "Pachelbel — Canon in D" },
-  { id: "thousand", label: "A Thousand Years" },
-  { id: "perfect", label: "Ed Sheeran — Perfect" },
-  { id: "piano", label: "Klasik Piyano" },
+  { id: "none", label: "Sessiz", src: null },
+  {
+    id: "canon",
+    label: "Wedding Love",
+    src: "/music/weddinglove.mp3",
+  },
+  {
+    id: "thousand",
+    label: "Happy Love",
+    src: "/music/happylove.mp3",
+  },
+  {
+    id: "perfect",
+    label: "Love",
+    src: "/music/love.mp3",
+  },
+  {
+    id: "piano",
+    label: "After Party",
+    src: "/music/afterparty.mp3",
+  },
 ] as const;
 
 export type EventTypeId = (typeof EVENT_TYPES)[number]["id"];
 export type ThemeId = string;
 export type MusicId = (typeof MUSIC_OPTIONS)[number]["id"];
+
+export function musicSrc(musicId: MusicId | string) {
+  const option = MUSIC_OPTIONS.find((item) => item.id === musicId);
+  return option?.src ?? null;
+}
 
 export type InvitationData = {
   theme: ThemeId;
