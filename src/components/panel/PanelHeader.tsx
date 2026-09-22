@@ -1,5 +1,5 @@
-import { signOutAction } from "@/app/actions/auth";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { SignOutButton } from "@/components/panel/SignOutButton";
 import { Button } from "@/components/ui/button";
 
 export function PanelHeader({ email }: { email?: string | null }) {
@@ -21,15 +21,7 @@ export function PanelHeader({ email }: { email?: string | null }) {
           >
             Yeni davetiye
           </Button>
-          <form action={signOutAction}>
-            <Button
-              type="submit"
-              variant="ghost"
-              className="h-9 rounded-full px-3 text-sm"
-            >
-              Çıkış
-            </Button>
-          </form>
+          <SignOutButton />
         </div>
       </div>
     </header>
