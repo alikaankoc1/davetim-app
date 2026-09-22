@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Music2, Pause, VolumeX } from "lucide-react";
+import { Music2, Pause } from "lucide-react";
 import {
   TemplateFrame,
   TemplateTexture,
@@ -179,17 +179,7 @@ export function HeroSection({
             {playing ? "Müziği durdur" : "Müziği aç"}
             <span className="sr-only">{musicLabel}</span>
           </motion.button>
-        ) : (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
-            className="mt-10 inline-flex items-center gap-2 text-xs opacity-60"
-          >
-            <VolumeX className="size-3.5" />
-            Sessiz davetiye
-          </motion.p>
-        )}
+        ) : null}
       </div>
 
       <motion.div
