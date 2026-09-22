@@ -233,7 +233,7 @@ export function Hero() {
             <Button
               nativeButton={false}
               variant="outline"
-              render={<a href="#ornek" />}
+              render={<a href="/ali-ayse" />}
               className="h-12 w-full rounded-full border-border/80 bg-card/70 px-7 text-base backdrop-blur-sm sm:w-auto"
             >
               Örnek İncele

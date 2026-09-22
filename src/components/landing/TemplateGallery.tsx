@@ -107,13 +107,6 @@ export function TemplateGallery() {
                         <Eye className="size-3.5" />
                         Önizle
                       </Button>
-                      <Button
-                        nativeButton={false}
-                        render={<a href={`/olustur?theme=${template.id}`} />}
-                        className="h-9 w-full max-w-[200px] rounded-full shadow-md"
-                      >
-                        Bu Şablonu Seç
-                      </Button>
                     </div>
                   </div>
                 </div>

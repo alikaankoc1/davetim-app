@@ -7,7 +7,10 @@ import {
   type InvitationRow,
 } from "@/lib/invitations-db";
 import type { InvitationData } from "@/lib/invitation";
-import type { StoredInvitation } from "@/lib/invitation-guest";
+import {
+  mockInvitationData,
+  type StoredInvitation,
+} from "@/lib/invitation-guest";
 
 export type PublishResult =
   | { ok: true; slug: string }
@@ -62,11 +65,17 @@ export async function getPublishedInvitation(
       .eq("status", "published")
       .maybeSingle();
 
-    if (error || !data) return null;
-    return fromInvitationRow(data as InvitationRow);
+    if (!error && data) return fromInvitationRow(data as InvitationRow);
   } catch {
-    return null;
+    // fall through to demo
   }
+
+  // Landing “Örnek İncele” demo
+  if (normalizedSlug === mockInvitationData.slug) {
+    return mockInvitationData;
+  }
+
+  return null;
 }
 
 export type RsvpResult =
