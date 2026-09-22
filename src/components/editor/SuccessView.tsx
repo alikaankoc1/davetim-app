@@ -1,14 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import confetti from "canvas-confetti";
-import { Check, Copy, Sparkles } from "lucide-react";
+import { Check, Copy, MessageCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { invitationLink } from "@/lib/invitation";
+import { absoluteInvitationUrl } from "@/lib/invitation";
 
 export function SuccessView({ slug }: { slug: string }) {
   const [copied, setCopied] = useState(false);
-  const link = invitationLink(slug);
+  const [shareUrl, setShareUrl] = useState("");
+
+  useEffect(() => {
+    setShareUrl(absoluteInvitationUrl(slug));
+  }, [slug]);
 
   useEffect(() => {
     void confetti({
@@ -19,9 +23,16 @@ export function SuccessView({ slug }: { slug: string }) {
     });
   }, []);
 
+  const whatsappHref = useMemo(() => {
+    if (!shareUrl) return "#";
+    const text = `Davetiyemiz: ${shareUrl}`;
+    return `https://wa.me/?text=${encodeURIComponent(text)}`;
+  }, [shareUrl]);
+
   async function copyLink() {
+    if (!shareUrl) return;
     try {
-      await navigator.clipboard.writeText(`https://${link}`);
+      await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
@@ -44,16 +55,18 @@ export function SuccessView({ slug }: { slug: string }) {
           Davetiyen <span className="italic text-primary">hazır</span>
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Ödeme adımı yakında. Şimdilik davetiyen kaydedildi; bağlantını
-          paylaşabilirsin.
+          Linki WhatsApp ile paylaşabilirsin. Not: bilgisayarındaki localhost
+          linki başka telefonda açılmaz; site yayınlanınca herkes açabilir.
         </p>
 
         <div className="mt-6 rounded-2xl border border-gold/35 bg-secondary/70 px-4 py-3">
           <p className="text-xs text-muted-foreground">Paylaşım linki</p>
-          <p className="mt-1 font-medium break-all text-primary">{link}</p>
+          <p className="mt-1 font-medium break-all text-primary">
+            {shareUrl || "…"}
+          </p>
         </div>
 
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
           <Button
             nativeButton={false}
             render={<a href={`/${slug}`} />}
@@ -69,6 +82,17 @@ export function SuccessView({ slug }: { slug: string }) {
           >
             {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
             {copied ? "Kopyalandı" : "Linki kopyala"}
+          </Button>
+          <Button
+            nativeButton={false}
+            variant="outline"
+            render={
+              <a href={whatsappHref} target="_blank" rel="noreferrer" />
+            }
+            className="h-11 rounded-full px-5"
+          >
+            <MessageCircle className="size-4" />
+            WhatsApp
           </Button>
           <Button
             nativeButton={false}

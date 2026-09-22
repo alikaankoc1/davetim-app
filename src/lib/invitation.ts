@@ -151,6 +151,17 @@ export function invitationLink(slug: string) {
   return `davetim.com/${slug}`;
 }
 
+/** WhatsApp / kopyala için gerçek açılır adres */
+export function absoluteInvitationUrl(slug: string) {
+  const path = `/${slug.trim().replace(/^\/+/, "")}`;
+  const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  if (site) return `${site}${path}`;
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}${path}`;
+  }
+  return path;
+}
+
 export function nameLabels(eventType: EventTypeId) {
   if (eventType === "dugun") return { a: "Gelin", b: "Damat" };
   if (eventType === "nisan") return { a: "İsim 1", b: "İsim 2" };
