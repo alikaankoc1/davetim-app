@@ -112,21 +112,7 @@ create policy "Users manage own orders"
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
--- Auth eklenene kadar geçici (sonra silinecek)
+-- Geçici açık politikalar kaldırıldı (Auth sonrası)
 drop policy if exists "Temp public can insert invitations" on public.invitations;
 drop policy if exists "Temp public can update invitations" on public.invitations;
 drop policy if exists "Temp public can select invitations" on public.invitations;
-
-create policy "Temp public can insert invitations"
-  on public.invitations for insert
-  with check (true);
-
-create policy "Temp public can update invitations"
-  on public.invitations for update
-  using (true)
-  with check (true);
-
--- Upsert (aynı slug güncelleme) için gerekli
-create policy "Temp public can select invitations"
-  on public.invitations for select
-  using (true);

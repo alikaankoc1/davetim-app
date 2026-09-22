@@ -90,6 +90,10 @@ function EditorInner({
     startTransition(async () => {
       const result = await publishInvitation(data, slug);
       if (!result.ok) {
+        if (result.error.includes("giriş")) {
+          router.push(`/giris?next=${encodeURIComponent("/olustur")}`);
+          return;
+        }
         setSaveError(result.error);
         return;
       }

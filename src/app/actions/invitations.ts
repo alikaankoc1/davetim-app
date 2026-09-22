@@ -30,7 +30,21 @@ export async function publishInvitation(
 
   try {
     const supabase = await createClient();
-    const row = toInvitationRow(data, normalizedSlug, "published");
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return {
+        ok: false,
+        error: "Davetiyeyi kaydetmek için önce giriş yapmalısın.",
+      };
+    }
+
+    const row = {
+      ...toInvitationRow(data, normalizedSlug, "published"),
+      user_id: user.id,
+    };
 
     const { error } = await supabase.from("invitations").upsert(row, {
       onConflict: "slug",

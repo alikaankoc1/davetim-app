@@ -56,6 +56,11 @@ export function SuccessView({ slug }: { slug: string }) {
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
           Davetiyen kaydedildi. Linki kopyalayıp WhatsApp ile paylaşabilirsin.
+          Katılım yanıtlarını{" "}
+          <a href="/panel" className="font-medium text-primary hover:underline">
+            panelinden
+          </a>{" "}
+          takip edebilirsin.
         </p>
 
         <div className="mt-6 rounded-2xl border border-gold/35 bg-secondary/70 px-4 py-3">

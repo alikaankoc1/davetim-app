@@ -20,7 +20,7 @@ export function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="border-b border-border/60 bg-background/75 backdrop-blur-xl">
-        <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:h-[4.5rem] sm:px-6 lg:px-8">
+        <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:h-[4.5rem] sm:px-6 lg:px-8">
           <BrandLogo href="#hero" />
 
           <div className="hidden items-center gap-8 md:flex">
@@ -35,7 +35,15 @@ export function Navbar() {
             ))}
           </div>
 
-          <div className="hidden md:block">
+          <div className="hidden items-center gap-2 md:flex">
+            <Button
+              nativeButton={false}
+              variant="ghost"
+              render={<a href="/panel" />}
+              className="h-10 rounded-full px-4 text-[0.9375rem]"
+            >
+              Panelim
+            </Button>
             <Button
               nativeButton={false}
               render={<a href="/olustur" />}
@@ -80,6 +88,13 @@ export function Navbar() {
                   {link.label}
                 </a>
               ))}
+              <a
+                href="/panel"
+                onClick={() => setOpen(false)}
+                className="rounded-xl px-3 py-3 text-base font-medium text-foreground hover:bg-muted"
+              >
+                Panelim
+              </a>
               <Button
                 nativeButton={false}
                 render={<a href="/olustur" onClick={() => setOpen(false)} />}
