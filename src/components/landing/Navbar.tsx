@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, Sparkles, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -20,21 +21,14 @@ export function Navbar() {
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="border-b border-border/60 bg-background/75 backdrop-blur-xl">
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:h-[4.5rem] sm:px-6 lg:px-8">
-          <a href="#hero" className="flex items-center gap-2.5">
-            <span className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_0_18px_oklch(0.42_0.11_22_/_0.35)]">
-              <Sparkles className="size-3.5" />
-            </span>
-            <span className="font-heading text-xl font-semibold tracking-tight text-foreground sm:text-[1.35rem]">
-              Davetim
-            </span>
-          </a>
+          <BrandLogo href="#hero" />
 
           <div className="hidden items-center gap-8 md:flex">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="text-[0.9375rem] font-medium text-muted-foreground transition-colors hover:text-foreground sm:text-base"
               >
                 {link.label}
               </a>
@@ -45,7 +39,7 @@ export function Navbar() {
             <Button
               nativeButton={false}
               render={<a href="/olustur" />}
-              className="h-10 rounded-full px-5 text-sm"
+              className="h-10 rounded-full px-5 text-[0.9375rem]"
             >
               Davetiye Oluştur
             </Button>
@@ -79,7 +73,7 @@ export function Navbar() {
                   href={link.href}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "rounded-xl px-3 py-3 text-sm font-medium text-foreground",
+                    "rounded-xl px-3 py-3 text-base font-medium text-foreground",
                     "hover:bg-muted"
                   )}
                 >
@@ -89,7 +83,7 @@ export function Navbar() {
               <Button
                 nativeButton={false}
                 render={<a href="/olustur" onClick={() => setOpen(false)} />}
-                className="mt-3 h-11 rounded-full"
+                className="mt-3 h-11 rounded-full text-[0.9375rem]"
               >
                 Davetiye Oluştur
               </Button>

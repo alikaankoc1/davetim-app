@@ -3,8 +3,9 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Eye, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye } from "lucide-react";
 import { publishInvitation } from "@/app/actions/invitations";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { Button } from "@/components/ui/button";
 import { PhonePreview } from "@/components/editor/PhonePreview";
 import { PreviewDrawer } from "@/components/editor/PreviewDrawer";
@@ -107,14 +108,7 @@ function EditorInner({
             step === 1 ? "max-w-7xl" : "max-w-6xl"
           )}
         >
-          <a href="/" className="flex items-center gap-2.5">
-            <span className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Sparkles className="size-3.5" />
-            </span>
-            <span className="font-heading text-xl font-semibold tracking-tight">
-              Davetim
-            </span>
-          </a>
+          <BrandLogo href="/" />
           <div className="hidden text-right sm:block">
             <p className="text-sm text-muted-foreground">Adım {step} / 4</p>
             {selectedTitle ? (

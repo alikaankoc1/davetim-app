@@ -54,6 +54,10 @@ export const metadata: Metadata = {
   title: "Davetim | Yeni Nesil Dijital Davetiye",
   description:
     "Davetim ile dakikalar içinde lüks, kişiselleştirilmiş dijital davetiyeler oluşturun. Misafirlerinizi modern ve zarif bir deneyimle karşılayın.",
+  icons: {
+    icon: [{ url: "/brand/davetim-logo.png", type: "image/png" }],
+    apple: [{ url: "/brand/davetim-logo.png" }],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

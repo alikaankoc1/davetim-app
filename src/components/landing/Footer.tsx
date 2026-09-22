@@ -1,4 +1,5 @@
-import { Mail, Sparkles } from "lucide-react";
+import { Mail } from "lucide-react";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 const footerLinks = [
   { href: "#tasarimlar", label: "Tasarımlar" },
@@ -49,14 +50,7 @@ export function Footer() {
       <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <a href="#hero" className="inline-flex items-center gap-2.5">
-              <span className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                <Sparkles className="size-3.5" />
-              </span>
-              <span className="font-heading text-xl font-semibold tracking-tight">
-                Davetim
-              </span>
-            </a>
+            <BrandLogo href="#hero" />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
               En özel gününüz için yeni nesil dijital davetiye. Zarif tasarımlar,
               akıllı LCV ve paylaşılabilir anılar.
